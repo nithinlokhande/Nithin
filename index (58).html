@@ -1,0 +1,4526 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+      maximum-scale=1.0,user-scalable=no">
+<title>Goal Tracker</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --gold:#f5b400;
+  --gold2:#ffcc33;
+  --orange:#ef7d12;
+  --brown:#5d2b0a;
+  --cream:#fff8df;
+  --cream2:#fff1c1;
+  --green:#21853a;
+  --red:#d92f2f;
+  --ink:#191919;
+  --muted:#776a58;
+  --card:#fffdf5;
+  --line:#e6c66b;
+}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+html,body{
+  margin:0;
+  padding:0;
+  background:#24160c;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Noto Sans Kannada",
+    "Noto Sans",
+    sans-serif;
+  color:var(--ink);
+}
+body{
+  min-height:100vh;
+}
+button,input,select{
+  font:inherit;
+}
+button{
+  border:0;
+  cursor:pointer;
+}
+.app{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  background:
+    radial-gradient(
+      circle at 15% 8%,
+      rgba(255,221,111,.22),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 90% 28%,
+      rgba(255,190,0,.14),
+      transparent 25%
+    ),
+    linear-gradient(
+      145deg,
+      #fff9e8 0%,
+      #fff0c0 45%,
+      #f8d67a 100%
+    );
+  overflow:hidden;
+  position:relative;
+}
+/* TOP BAR */
+.topbar{
+  height:72px;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:
+    linear-gradient(
+      135deg,
+      #fff9e7,
+      #f5d06a
+    );
+  border-bottom:1px solid #d9a832;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  color:#5a2908;
+}
+.logo{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(
+      145deg,
+      #ffe56b,
+      #e99a00
+    );
+  font-size:24px;
+  box-shadow:
+    0 3px 10px #b9782344;
+}
+.top-actions{
+  display:flex;
+  gap:8px;
+}
+.iconbtn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:#fff7dc;
+  border:1px solid #dcae43;
+  font-size:20px;
+}
+/* SCREENS */
+.screen{
+  display:none;
+  padding:16px 14px 100px;
+}
+.screen.active{
+  display:block;
+}
+/* CAROUSEL */
+.carousel-container{
+  position:relative;
+  margin-bottom:14px;
+}
+.carousel{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  gap:12px;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:6px;
+}
+.carousel::-webkit-scrollbar{
+  display:none;
+}
+.slide-card{
+  flex:0 0 100%;
+  width:100%;
+  scroll-snap-align:start;
+  border-radius:24px;
+  padding:18px 16px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 22px #6b350733;
+}
+.slide-card.bg-1{
+  background:
+    linear-gradient(
+      135deg,
+      #5b2206,
+      #9c4d0a 48%,
+      #e48d10
+    );
+}
+.slide-card.bg-2{
+  background:
+    linear-gradient(
+      135deg,
+      #1b4d2e,
+      #277547 48%,
+      #3da367
+    );
+}
+.slide-card.bg-3{
+  background:
+    linear-gradient(
+      135deg,
+      #203354,
+      #32548a 48%,
+      #537dbf
+    );
+}
+.slide-card.bg-3 .stats{
+  grid-template-columns:1fr 1fr;
+}
+.slide-card:after{
+  content:"₹";
+  position:absolute;
+  right:-4px;
+  top:-35px;
+  font-size:190px;
+  font-weight:1000;
+  color:#fff2a41a;
+  transform:rotate(-12deg);
+}
+.slide-card h1,
+.slide-card p{
+  position:relative;
+  z-index:1;
+}
+.slide-card h1{
+  margin:0;
+  font-size:26px;
+  line-height:1.1;
+}
+.slide-card p{
+  margin:7px 0 15px;
+  color:#ffe9a4;
+  font-size:14px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  position:relative;
+  z-index:1;
+}
+.stat{
+  background:#fff8df;
+  color:#2a1b0e;
+  border-radius:15px;
+  padding:10px 7px;
+  text-align:center;
+}
+.stat small{
+  display:block;
+  color:#806849;
+  font-size:11px;
+}
+.stat b{
+  display:block;
+  margin-top:3px;
+  font-size:15px;
+}
+/* DOTS */
+.carousel-dots{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:4px;
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#d8b877;
+  transition:.3s;
+  cursor:pointer;
+}
+.dot.active{
+  width:22px;
+  border-radius:4px;
+  background:#9c4d0a;
+}
+/* PROGRESS */
+.progress-card{
+  background:rgba(255,255,255,.9);
+  border:1px solid #e0b348;
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 5px 15px #79500c22;
+  margin-bottom:14px;
+}
+.progress-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:900;
+}
+.percent{
+  font-size:25px;
+  color:#d97700;
+}
+.bar{
+  height:19px;
+  background:#ead8aa;
+  border-radius:99px;
+  padding:3px;
+  margin:10px 0 8px;
+  overflow:hidden;
+}
+.fill{
+  height:100%;
+  border-radius:99px;
+  background:
+    linear-gradient(
+      90deg,
+      #16843b,
+      #43c463,
+      #21853a
+    );
+  box-shadow:0 0 10px #21853a99;
+  transition:width .5s;
+  position:relative;
+  overflow:visible;
+}
+.fill::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  right:0;
+  width:13px;
+  height:13px;
+  border:1.5px solid #16843b;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 4px #14532d88;
+  transform:translateY(-50%);
+  animation:goal-hop .7s ease-in-out infinite;
+}
+@keyframes goal-hop{
+  0%,100%{ transform:translate(0,-50%); }
+  50%{ transform:translate(2px,-50%); }
+}
+@media(prefers-reduced-motion:reduce){
+  .fill::after{ animation:none; }
+}
+.progress-note{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  color:#665842;
+}
+.quote{
+  margin-top:11px;
+  padding:9px 11px;
+  border-radius:12px;
+  background:#fff5cf;
+  color:#6a3a0d;
+  font-weight:800;
+}
+/* SECTION */
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:18px 4px 9px;
+}
+.section-title h2{
+  margin:0;
+  font-size:19px;
+}
+.link{
+  color:#d66e09;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+}
+/* DAYS / WEEKS */
+.days{
+  background:#fffdf7;
+  border:1px solid #e1bd62;
+  border-radius:22px;
+  padding:11px 13px;
+  box-shadow:0 4px 15px #8c5b1d20;
+}
+.day{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) auto 32px;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #eadfca;
+}
+.day:last-child{
+  border-bottom:0;
+}
+.week-summary{
+  min-width:0;
+  padding:0;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+}
+.week-summary strong{
+  font-size:14px;
+}
+.week-summary small{
+  display:block;
+  color:#8a7a65;
+  margin-top:3px;
+}
+.expand-week{
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  background:transparent;
+  color:#9c4d0a;
+  font-size:17px;
+  line-height:1;
+  transition:transform .2s;
+  position:relative;
+}
+.expand-week::before{
+  content:none;
+}
+.day.expanded .expand-week{
+  transform:rotate(180deg);
+}
+.day.locked{
+  opacity:.5;
+}
+.week-details{
+  grid-column:2 / -1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px 0 2px;
+}
+.week-detail{
+  min-width:0;
+  padding:9px;
+  border-radius:11px;
+  background:#fff6dc;
+}
+.week-detail small{
+  display:block;
+  color:#806849;
+  font-size:11px;
+}
+.week-detail b{
+  display:block;
+  margin-top:3px;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+.check{
+  width:30px;
+  height:30px;
+  border-radius:9px;
+  border:2px solid #e2ad30;
+  background:#fff;
+  display:grid;
+  place-items:center;
+  color:white;
+  font-weight:900;
+}
+.day.done .check{
+  background:#32cd32;
+  border-color:#32cd32;
+}
+.check.locked{
+  background:#eee8db;
+  border-color:#d8cdb8;
+  color:#a99a83;
+}
+.day strong{
+  font-size:14px;
+}
+.day small{
+  display:block;
+  color:#8a7a65;
+  margin-top:2px;
+}
+.amount{
+  font-weight:900;
+  color:#227c36;
+}
+.pending{
+  color:#7d6b55;
+  background:#eee8db;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:12px;
+  white-space:nowrap;
+}
+.week-preview{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:3px;
+  text-align:right;
+}
+.week-preview-interest{
+  color:#16843b;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.week-preview-target{
+  color:#7d6b55;
+  font-size:11px;
+  white-space:nowrap;
+}
+/* =========================================================
+   DRAWER — NEW DESIGN
+========================================================= */
+.drawer-backdrop{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  z-index:40;
+}
+.drawer-backdrop.show{
+  display:block;
+}
+.drawer{
+  position:absolute;
+  top:0;
+  left:0;
+  width:min(360px,92vw);
+  height:100%;
+  background:#f4f7fc;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  transform:translateX(-100%);
+  transition:transform .25s ease;
+  box-shadow:8px 0 24px #0003;
+  display:flex;
+  flex-direction:column;
+}
+.drawer-backdrop.show .drawer{
+  transform:translateX(0);
+}
+.drawer-header-curve{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:190px;
+  background:#17b4f0;
+  border-bottom-left-radius:40px;
+  border-bottom-right-radius:40px;
+  z-index:0;
+}
+.drawer-top-nav{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  padding:20px 22px;
+  color:#fff;
+  font-size:18px;
+  font-weight:600;
+}
+.drawer-close-btn{
+  background:none;
+  border:0;
+  color:#fff;
+  font-size:20px;
+  margin-left:auto;
+  cursor:pointer;
+  padding:0;
+  line-height:1;
+}
+.drawer-close-btn i{pointer-events:none;}
+.drawer-profile-card{
+  position:relative;
+  z-index:2;
+  background:#fff;
+  margin:8px 16px 0 16px;
+  border-radius:24px;
+  padding:0 16px 18px 16px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.06);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.drawer-avatar-container{
+  margin-top:-55px;
+  margin-bottom:12px;
+}
+.drawer-avatar{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  border:4px solid #fff;
+  background:#e9eef8;
+  color:#68758b;
+  font-size:34px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(0,0,0,0.12);
+  cursor:pointer;
+  padding:0;
+}
+.drawer-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.drawer-user-name{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:4px;
+}
+.drawer-profile-name{
+  font-size:18px;
+  font-weight:700;
+  color:#1e293b;
+  background:none;
+  border:0;
+  cursor:pointer;
+  padding:0;
+  max-width:calc(100% - 34px);
+  overflow-wrap:anywhere;
+}
+.drawer-edit-profile{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#edf2fa;
+  color:#53647e;
+  border:0;
+  cursor:pointer;
+  font-size:12px;
+  display:grid;
+  place-items:center;
+  padding:0;
+}
+.drawer-user-status{
+  font-size:12px;
+  color:#64748b;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:14px;
+}
+.drawer-user-status i{
+  color:#ef4444;
+  font-size:12px;
+}
+.drawer-user-stats{
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid #f1f5f9;
+  padding-top:14px;
+}
+.drawer-stat-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+}
+.drawer-stat-icon{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:13px;
+  flex:0 0 34px;
+}
+.drawer-stat-icon.calendar{background:#e0f2fe;color:#0ea5e9;}
+.drawer-stat-icon.star{background:#fef3c7;color:#f59e0b;}
+.drawer-stat-info p{
+  font-size:10px;
+  color:#64748b;
+  font-weight:500;
+  margin:0;
+}
+.drawer-stat-info h4{
+  font-size:12px;
+  color:#1e293b;
+  font-weight:600;
+  margin:2px 0 0;
+}
+.drawer-divider{
+  width:1px;
+  background:#f1f5f9;
+  height:28px;
+  flex:0 0 1px;
+}
+.drawer-menu-list{
+  position:relative;
+  z-index:2;
+  padding:16px 16px 0 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.drawer-group-title{
+  margin:8px 4px 0;
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.drawer-link{
+  width:100%;
+  background:#fff;
+  border-radius:14px;
+  padding:11px 13px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  border:0;
+  box-shadow:0 2px 5px rgba(0,0,0,0.03);
+  color:#1e293b;
+  font-size:14px;
+  font-weight:500;
+  text-align:left;
+  transition:transform .15s;
+  font-family:inherit;
+}
+.drawer-link:active{
+  transform:scale(0.98);
+}
+.drawer-link > span:not(.drawer-menu-icon){
+  flex:1;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.drawer-menu-icon{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:15px;
+  flex:0 0 38px;
+}
+.drawer-menu-icon.home{background:#fef3c7;color:#f59e0b;}
+.drawer-menu-icon.mint{background:#d1fae5;color:#10b981;}
+.drawer-menu-icon.rose{background:#fee2e2;color:#ef4444;}
+.drawer-menu-icon.aqua{background:#ede9fe;color:#8b5cf6;}
+.drawer-menu-icon.lavender{background:#dbeafe;color:#3b82f6;}
+.drawer-menu-icon.gray{background:#f3f4f6;color:#6b7280;}
+.drawer-menu-icon.pink{background:#fecaca;color:#ef4444;}
+.drawer-menu-arrow{
+  color:#cbd5e1;
+  font-size:13px;
+  flex:0 0 auto;
+}
+.drawer-link.drawer-logout{
+  background:#ffecec;
+  color:#ef4444;
+  font-weight:600;
+  margin-top:4px;
+  margin-bottom:20px;
+}
+.drawer-link.drawer-logout .drawer-menu-arrow{
+  color:#ef4444;
+}
+/* BOTTOM NAV */
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:520px;
+  height:76px;
+  background:#fffdf5;
+  border-top:1px solid #dfbd65;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  z-index:20;
+  box-shadow:
+    0 -5px 20px #57300d18;
+}
+.nav{
+  background:none;
+  color:#7a6b56;
+  font-size:10px;
+  font-weight:800;
+  padding:0 2px;
+}
+.nav .ni{
+  font-size:19px;
+  display:block;
+  margin-bottom:2px;
+}
+.nav.active{
+  margin:7px 6px;
+  border-radius:14px;
+  background:#fff1c8;
+  color:#e47708;
+}
+/* CARDS */
+.card{
+  background:#fffdf7;
+  border:1px solid #e2bf67;
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:12px;
+  box-shadow:0 4px 13px #6e471622;
+}
+.profile-overview{
+  padding:18px;
+  border:0;
+  border-radius:26px;
+  background:rgba(255,255,255,.82);
+}
+.profile-overview-head{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:4px 2px 18px;
+}
+.profile-large-avatar{
+  flex:0 0 94px;
+  width:94px;
+  height:94px;
+  border:4px solid #fff;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:#ead77f;
+  font-size:42px;
+  box-shadow:0 2px 8px #68431a22;
+}
+.profile-avatar-edit{
+  position:relative;
+  padding:0;
+  color:inherit;
+  overflow:visible;
+}
+.profile-avatar-edit > span:first-child{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  overflow:hidden;
+}
+.profile-camera-badge{
+  position:absolute;
+  right:-3px;
+  bottom:2px;
+  z-index:1;
+  width:29px;
+  height:29px;
+  display:grid;
+  place-items:center;
+  border:2px solid #fff;
+  border-radius:50%;
+  background:#ef7d12;
+  font-size:14px;
+  line-height:1;
+}
+.profile-large-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.profile-overview-copy{
+  min-width:0;
+  flex:1;
+}
+.profile-overview-copy h2{
+  margin:0;
+  font-size:24px;
+}
+.profile-overview-copy p{
+  margin:3px 0 10px;
+  color:#81715d;
+}
+.profile-name-edit{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px;
+  border-radius:13px;
+  background:#fff6df;
+  color:var(--ink);
+  text-align:left;
+}
+.profile-name-edit b{
+  min-width:0;
+  flex:1;
+  overflow-wrap:anywhere;
+}
+.profile-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.profile-metric{
+  min-width:0;
+  padding:13px 11px;
+  border-radius:17px;
+  background:#fffaf0;
+}
+.profile-metric small{
+  display:block;
+  color:#776a58;
+  font-size:12px;
+}
+.profile-metric b{
+  display:block;
+  margin-top:5px;
+  font-size:16px;
+  overflow-wrap:anywhere;
+}
+.profile-metric .profile-current-green{
+  color:#16843b;
+}
+.profile-reward{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:13px;
+  padding:13px;
+  border-radius:17px;
+  background:#fff3d4;
+  color:#5d2b0a;
+  text-align:left;
+}
+.profile-reward-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#ffc34d;
+  font-size:25px;
+}
+.profile-reward span:nth-child(2){
+  flex:1;
+}
+.profile-reward b,.profile-reward small{
+  display:block;
+}
+.profile-reward small{
+  margin-top:3px;
+  color:#776a58;
+  font-size:12px;
+}
+.profile-photo-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin:22px 0 8px;
+}
+.profile-photo-button{
+  width:112px;
+  height:112px;
+  border:3px solid #f1b53a;
+  border-radius:50%;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#ffcc33,#ed7800);
+  color:#fff;
+  font-size:42px;
+  box-shadow:0 5px 15px #a64e1730;
+  cursor:pointer;
+}
+.profile-photo-button img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.profile-photo-hint{
+  margin-top:9px;
+  color:#8b7960;
+  font-size:12px;
+}
+.profile-photo-input{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  overflow:hidden;
+}
+.profile-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:16px 0;
+}
+.profile-field{
+  min-width:0;
+  padding:12px;
+  border:1px solid #ead7a8;
+  border-radius:16px;
+  background:linear-gradient(145deg,#fffdf7,#fff6df);
+}
+.profile-field label{
+  display:block;
+  color:#6c5030;
+  font-size:12px;
+  font-weight:800;
+}
+.profile-field .input{
+  margin:7px 0 0;
+  padding:11px 9px;
+  font-size:14px;
+}
+@media(max-width:360px){
+  .profile-grid{grid-template-columns:1fr;}
+}
+.input{
+  width:100%;
+  padding:14px;
+  border-radius:13px;
+  border:1px solid #cdbd9b;
+  background:#fffaf0;
+  outline:none;
+  margin:7px 0 12px;
+}
+.input:focus{
+  border-color:#ee921b;
+  box-shadow:0 0 0 3px #ee921b22;
+}
+.input.invalid{
+  border:2px solid var(--red);
+  background:#fff3f3;
+  box-shadow:0 0 0 3px #d92f2f22;
+}
+.required-star{
+  color:#d92f2f;
+  font-weight:900;
+}
+.rate-picks,
+.amount-picks{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:-4px 0 12px;
+}
+.rate-pick,
+.amount-pick{
+  padding:7px 10px;
+  border:1px solid #dfbd65;
+  border-radius:999px;
+  background:#fff6df;
+  color:#5d2b0a;
+  font-size:13px;
+  font-weight:800;
+}
+.rate-pick:active,.rate-pick.selected{
+  background:#21853a;
+  border-color:#21853a;
+  color:#fff;
+}
+.amount-pick{
+  padding:7px 9px;
+  border:1px solid #dfbd65;
+  border-radius:999px;
+  background:#fff6df;
+  color:#5d2b0a;
+  font-size:12px;
+  font-weight:800;
+}
+.amount-pick:active{
+  background:#21853a;
+  border-color:#21853a;
+  color:#fff;
+}
+.primary{
+  width:100%;
+  padding:15px;
+  border-radius:15px;
+  background:
+    linear-gradient(
+      135deg,
+      #ff971d,
+      #eb6e06
+    );
+  color:white;
+  font-weight:900;
+  box-shadow:0 5px 12px #a64e1730;
+  margin-bottom:10px;
+}
+.secondary{
+  width:100%;
+  padding:13px;
+  border-radius:15px;
+  background:#fff;
+  border:1px solid #e78b20;
+  color:#d86c08;
+  font-weight:900;
+  margin-bottom:10px;
+}
+.metric-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.metric{
+  background:#fff6d6;
+  border-radius:15px;
+  padding:12px;
+}
+.metric small{
+  color:#77634b;
+}
+.metric b{
+  display:block;
+  font-size:18px;
+  margin-top:4px;
+}
+.history-panel{
+  padding:17px;
+  border:1px solid #e2bf67;
+  border-radius:22px;
+  background:#fffdf7;
+  box-shadow:0 4px 13px #6e471622;
+}
+.history-title-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.history-title-icon{font-size:23px;}
+.history-title-row h1{
+  flex:1;
+  margin:0;
+  color:#342316;
+  font-size:21px;
+  line-height:1.2;
+}
+.history-close{
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:#fff1c8;
+  color:#8b4a0a;
+  font-size:22px;
+}
+.history-filters{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.history-filters[hidden]{
+  display:none;
+}
+.history-filter{
+  min-width:0;
+  padding:10px;
+  border:1px solid #e5d3a7;
+  border-radius:14px;
+  background:#fff8e8;
+}
+.history-filter small{
+  display:block;
+  margin-bottom:5px;
+  color:#776a58;
+  font-size:12px;
+  font-weight:800;
+}
+.history-filter .input{
+  min-height:44px;
+  margin:0;
+  padding:9px 30px 9px 10px;
+  border-color:#dfc47e;
+  background:#fffdf7;
+  font-size:14px;
+}
+.history-interest-summary{
+  margin:12px 0 16px;
+  padding:14px 15px;
+  border:1px solid #a8d8af;
+  border-radius:17px;
+  background:#eaf8ed;
+  color:#17652c;
+}
+.history-interest-summary small{
+  display:block;
+  color:#477952;
+  font-size:12px;
+  font-weight:800;
+}
+.history-interest-summary strong{
+  display:block;
+  margin-top:4px;
+  font-size:24px;
+  line-height:1.2;
+}
+.history-records{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.history-record{
+  display:grid;
+  grid-template-columns:57px minmax(0,1fr) auto 15px;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  min-width:0;
+  padding:11px 9px;
+  border:1px solid #eadfc9;
+  border-radius:17px;
+  background:#fff;
+  color:var(--ink);
+  text-align:left;
+  box-shadow:0 2px 7px #6e47160b;
+}
+.history-record.initial-record,
+.history-record.manual-record{
+  border-color:#c4d9f4;
+  background:#f1f7ff;
+}
+.history-date-block{
+  min-width:0;
+  text-align:center;
+}
+.history-date-block b{
+  display:block;
+  color:#e47708;
+  font-size:12px;
+  line-height:1.2;
+}
+.history-date-block small{
+  display:block;
+  margin-top:4px;
+  color:#776a58;
+  font-size:10px;
+  line-height:1.2;
+}
+.initial-record .history-date-block b,
+.manual-record .history-date-block b{
+  color:#2458a6;
+  font-size:11px;
+}
+.history-record-values{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  color:#655b4d;
+  font-size:11px;
+  line-height:1.25;
+}
+.history-record-values span{overflow-wrap:anywhere;}
+.history-record-values .history-interest-value{
+  color:#16843b;
+  font-weight:800;
+}
+.history-record-values .history-closing-value{
+  color:#342316;
+  font-weight:900;
+}
+.history-record-summary{
+  min-width:66px;
+  padding:7px 6px;
+  border-radius:12px;
+  background:#eaf8ed;
+  color:#16843b;
+  text-align:center;
+}
+.initial-record .history-record-summary,
+.manual-record .history-record-summary{
+  background:#e0ecff;
+  color:#2458a6;
+}
+.history-record-summary b{
+  display:block;
+  font-size:12px;
+  white-space:nowrap;
+}
+.history-record-summary small{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  font-weight:800;
+  line-height:1.2;
+}
+.history-record-arrow{
+  color:#a18a68;
+  font-size:17px;
+  text-align:center;
+}
+.history-record-detail{
+  grid-column:1/-1;
+  margin-top:3px;
+  padding:8px 9px;
+  border-radius:10px;
+  background:#fff8e8;
+  color:#655b4d;
+  font-size:11px;
+  line-height:1.5;
+}
+.initial-record .history-record-detail,
+.manual-record .history-record-detail{background:#e7f0ff;}
+.history-empty{
+  margin:0;
+  border:1px dashed #dfc47e;
+  border-radius:16px;
+  background:#fffaf0;
+}
+@media(max-width:360px){
+  .history-panel{padding:13px;}
+  .history-record{grid-template-columns:48px minmax(0,1fr) auto 12px;gap:6px;padding:10px 7px;}
+  .history-record-values{font-size:10px;}
+  .history-record-summary{min-width:59px;padding:6px 4px;}
+  .history-record-summary b{font-size:11px;}
+}
+.history-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #eadfca;
+}
+.history-row:last-child{
+  border:0;
+}
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:99px;
+  font-size:11px;
+  font-weight:900;
+}
+.green{
+  background:#dff4df;
+  color:#197233;
+}
+.blue{
+  background:#e0ecff;
+  color:#2458a6;
+}
+.orange{
+  background:#fff0cc;
+  color:#a65a00;
+}
+.red{
+  background:#ffe0e0;
+  color:#b62323;
+}
+.chart{
+  height:180px;
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+  padding:12px 5px 3px;
+}
+.col{
+  flex:1;
+  background:
+    linear-gradient(
+      #ffca28,
+      #ef8b00
+    );
+  border-radius:8px 8px 3px 3px;
+  min-height:8px;
+  position:relative;
+}
+.col span{
+  position:absolute;
+  bottom:-20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:9px;
+  color:#7b684d;
+}
+.empty{
+  text-align:center;
+  color:#7b6c59;
+  padding:35px 10px;
+}
+.calculator-result{
+  margin-top:16px;
+  padding:14px;
+  border:1px solid #e2bf67;
+  border-left:4px solid #ef7d12;
+  border-radius:12px;
+  background:#fff8df;
+}
+.maturity-highlight{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  margin-top:10px;
+  padding:13px 15px;
+  border:1px solid #8acb98;
+  border-left:4px solid #21853a;
+  border-radius:13px;
+  background:#eaf8ed;
+  color:#17652c;
+}
+.maturity-highlight small{
+  font-size:12px;
+  font-weight:700;
+}
+.maturity-highlight strong{
+  font-size:22px;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+.calculator-summary{
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+.calculator-result h3{
+  margin:18px 0 9px;
+  font-size:16px;
+}
+.calculator-table-wrap{
+  max-height:350px;
+  overflow:auto;
+  border:1px solid #eadfca;
+  border-radius:10px;
+  background:#fff;
+}
+.calculator-table{
+  width:100%;
+  min-width:650px;
+  border-collapse:collapse;
+  text-align:left;
+  font-size:13px;
+}
+.calculator-table th,.calculator-table td{
+  padding:10px 9px;
+  border-bottom:1px solid #eadfca;
+  white-space:nowrap;
+}
+.calculator-table th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:#fff1c8;
+  color:#5d2b0a;
+}
+.calculator-table .text-right{
+  text-align:right;
+}
+.calculator-table .text-green{
+  color:#16843b;
+  font-weight:700;
+}
+/* OVERLAY */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:flex-end;
+  z-index:50;
+}
+.overlay.show{
+  display:flex;
+}
+.overlay.calculator-open,
+.overlay.profile-open{
+  align-items:stretch;
+  background:#fffdf7;
+}
+.overlay.calculator-open .sheet,
+.overlay.profile-open .sheet{
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  margin:0;
+  border-radius:0;
+  padding:20px max(20px,calc((100vw - 520px)/2 + 20px));
+}
+.sheet{
+  width:100%;
+  max-width:520px;
+  margin:auto;
+  background:#fffdf7;
+  border-radius:25px 25px 0 0;
+  padding:20px;
+  max-height:88vh;
+  overflow:auto;
+}
+.handle{
+  width:45px;
+  height:5px;
+  border-radius:10px;
+  background:#d6c5a4;
+  margin:0 auto 15px;
+}
+.close{
+  float:right;
+  background:#fff0d2;
+  border-radius:50%;
+  width:34px;
+  height:34px;
+}
+/* SETTINGS */
+.settings-header{
+  background:
+    linear-gradient(
+      135deg,
+      #fff9e7,
+      #f5d06a
+    );
+  border:1px solid #d9a832;
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:18px;
+}
+.settings-header-icon{
+  width:55px;
+  height:55px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(
+      145deg,
+      #ffcc33,
+      #ed7800
+    );
+  color:#fff;
+  font-size:28px;
+  margin-bottom:12px;
+}
+.settings-header h2{
+  margin:0 0 5px;
+  color:#5a2908;
+}
+.settings-header p{
+  margin:0;
+  color:#79654a;
+  font-size:13px;
+}
+.language-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.language-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  background:#fffdf7;
+  border:1.5px solid #dfc47e;
+  border-radius:16px;
+  cursor:pointer;
+  transition:.2s;
+}
+.language-card.selected{
+  border-color:#f97316;
+  background:#fffaf5;
+  box-shadow:
+    0 4px 12px #f9731620;
+}
+.lang-info{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.lang-icon{
+  width:40px;
+  height:40px;
+  background:#eee5d1;
+  color:#5d2b0a;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  font-size:15px;
+}
+.language-card.selected .lang-icon{
+  background:#f97316;
+  color:#fff;
+}
+.lang-name{
+  font-size:16px;
+  font-weight:700;
+  color:#1f2937;
+}
+.lang-native{
+  display:block;
+  color:#8b7960;
+  font-size:11px;
+  margin-top:2px;
+}
+input[type="radio"]{
+  appearance:none;
+  width:21px;
+  height:21px;
+  border:2px solid #cbd5e1;
+  border-radius:50%;
+  outline:none;
+  cursor:pointer;
+  position:relative;
+  flex:0 0 auto;
+}
+input[type="radio"]:checked{
+  border-color:#f97316;
+  background:#f97316;
+}
+input[type="radio"]:checked::after{
+  content:'';
+  position:absolute;
+  top:5px;
+  left:5px;
+  width:7px;
+  height:7px;
+  background:#fff;
+  border-radius:50%;
+}
+.settings-save{
+  width:100%;
+  padding:15px;
+  margin-top:18px;
+  border-radius:15px;
+  background:
+    linear-gradient(
+      135deg,
+      #ff971d,
+      #eb6e06
+    );
+  color:#fff;
+  font-weight:900;
+  box-shadow:
+    0 5px 12px #a64e1730;
+}
+/* SETTINGS ITEMS */
+.settings-section{
+  margin-top:18px;
+}
+#otherSettingsSection{
+  scroll-margin-top:88px;
+}
+.settings-section-title{
+  font-size:13px;
+  font-weight:900;
+  color:#806849;
+  text-transform:uppercase;
+  margin:0 4px 9px;
+}
+.setting-item{
+  background:#fffdf7;
+  border:1px solid #dfc47e;
+  border-radius:17px;
+  padding:15px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.setting-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.setting-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#fff1c8;
+  display:grid;
+  place-items:center;
+  font-size:20px;
+}
+.setting-item b{
+  display:block;
+}
+.setting-item small{
+  display:block;
+  color:#81715d;
+  margin-top:3px;
+}
+.setting-edit{
+  flex:0 0 auto;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#fff1c8;
+  color:#9c4d0a;
+  font-size:12px;
+  font-weight:800;
+}
+.profile-top-button{
+  padding:0;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+.profile-top-button img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.app.history-view .whatsapp-fab{
+  display:none;
+}
+.whatsapp-fab{
+  position:fixed;
+  right:max(16px,calc((100vw - 520px)/2 + 16px));
+  bottom:92px;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#25d366;
+  color:#fff;
+  box-shadow:0 4px 14px #0004;
+  z-index:25;
+}
+.whatsapp-fab svg{
+  width:31px;
+  height:31px;
+  fill:currentColor;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:92px;
+  transform:
+    translate(-50%,20px);
+  opacity:0;
+  background:#2c1b0c;
+  color:#fff;
+  padding:11px 16px;
+  border-radius:99px;
+  font-size:13px;
+  z-index:100;
+  transition:.25s;
+  pointer-events:none;
+  max-width:88vw;
+  text-align:center;
+}
+.toast.show{
+  opacity:1;
+  transform:
+    translate(-50%,0);
+}
+@media(min-width:700px){
+  .app{
+    box-shadow:0 0 40px #0008;
+  }
+  .bottom{
+    border-radius:20px 20px 0 0;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- =========================================================
+     MAIN APP
+========================================================= -->
+<div id="main" style="display:block">
+<header class="topbar">
+  <button class="iconbtn"
+          aria-label="Open menu"
+          onclick="toggleDrawer(true)">
+    ☰
+  </button>
+  <div class="brand">
+    <div class="logo">
+      🎯
+    </div>
+    <div>
+      <span id="brandGoalTitle">—</span>
+      <br>
+      <small id="topSubTitle"
+             style="font-weight:600">
+        ಗುರಿ ಟ್ರ್ಯಾಕರ್
+      </small>
+    </div>
+  </div>
+  <button class="iconbtn" type="button" aria-label="Notifications" title="Notifications" onclick="openSheet('notifications')">🔔</button>
+</header>
+<main>
+<!-- =========================================================
+     HOME
+========================================================= -->
+<section id="home"
+         class="screen active">
+  <div class="carousel-container">
+    <div class="carousel"
+         id="homeCarousel"
+         onscroll="updateDots()">
+      <div class="slide-card bg-1">
+        <h1 id="s1Title">
+          —
+        </h1>
+        <p id="heroText">
+          ನನ್ನ ಗುರಿ — ಪ್ರತಿ ವಾರ ಹೂಡಿಕೆ ಮಾಡಿ ಗುರಿ ತಲುಪಿ.
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <small id="st1">
+              ಈವರೆಗೆ
+            </small>
+            <b id="currentTop">
+              ₹0
+            </b>
+          </div>
+          <div class="stat">
+            <small id="st2">
+              ಗುರಿ
+            </small>
+            <b id="goalTop">—</b>
+          </div>
+          <div class="stat">
+            <small id="st3">
+              ಬಾಕಿ
+            </small>
+            <b id="remainingTop">—</b>
+          </div>
+        </div>
+      </div>
+      <div class="slide-card bg-2">
+        <h1 id="s2Title">
+          🏆 ಮೈಲಿಗಲ್ಲು ಪ್ರಗತಿ
+        </h1>
+        <p id="s2Sub">
+          ಪ್ರಮುಖ ಹಂತಗಳ ತಲುಪುವಿಕೆ
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <small id="m25Label">—</small>
+            <b id="m25">—</b>
+          </div>
+          <div class="stat">
+            <small id="m50Label">—</small>
+            <b id="m50">—</b>
+          </div>
+          <div class="stat">
+            <small id="m75Label">—</small>
+            <b id="m75">—</b>
+          </div>
+        </div>
+      </div>
+      <div class="slide-card bg-3">
+        <h1 id="s3Title">
+          📊 ವಾರದ ವೇಗ ಮತ್ತು ದರ
+        </h1>
+        <p id="s3Sub">
+          ವಾರದ ಬೆಳವಣಿಗೆಯ ಮಾಹಿತಿ
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <small id="stRate">
+              ವಾರದ ದರ
+            </small>
+            <b id="sRate">1.5%</b>
+          </div>
+          <div class="stat">
+            <small id="stProg">
+              ಪ್ರಗತಿ
+            </small>
+            <b id="sPercent">
+              0%
+            </b>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots">
+      <span class="dot active"
+            onclick="scrollToSlide(0)">
+      </span>
+      <span class="dot"
+            onclick="scrollToSlide(1)">
+      </span>
+      <span class="dot"
+            onclick="scrollToSlide(2)">
+      </span>
+    </div>
+  </div>
+  <div class="progress-card">
+    <div class="progress-head">
+      <span id="progTitle">
+        ಒಟ್ಟು ಪ್ರಗತಿ
+      </span>
+      <span class="percent"
+            id="percent">
+        0%
+      </span>
+    </div>
+    <div class="bar">
+      <div id="fill"
+           class="fill"
+           style="width:0%">
+      </div>
+    </div>
+    <div class="progress-note">
+      <span id="doneText">
+        ₹0 ಪೂರ್ಣ
+      </span>
+      <span id="targetText">
+        ₹1,00,00,000 ಗುರಿ
+      </span>
+    </div>
+    <div class="quote"
+         id="quote">
+      🔥 ಪ್ರಾರಂಭಿಸಿ
+    </div>
+  </div>
+  <div class="section-title">
+    <h2 id="daysTitle">
+      ಮುಂದಿನ 5 ವಾರಗಳ ಗುರಿ
+    </h2>
+    <span class="link"
+          onclick="openSheet('add')"
+          id="addLink">
+      + ಮೊತ್ತ ಸೇರಿಸಿ
+    </span>
+  </div>
+  <div class="days"
+       id="days">
+  </div>
+</section>
+<!-- =========================================================
+     HISTORY
+========================================================= -->
+<section id="history" class="screen">
+  <div class="history-panel">
+    <div class="history-title-row">
+      <span class="history-title-icon" aria-hidden="true">📜</span>
+      <h1 id="histHead">ಪ್ರಗತಿ ಇತಿಹಾಸ</h1>
+    </div>
+    <div class="history-filters" id="historyFilters">
+      <label class="history-filter">
+        <small id="historyYearLabel">ವರ್ಷ</small>
+        <select id="historyYear" class="input" onchange="updateHistoryFilter()"></select>
+      </label>
+      <label class="history-filter">
+        <small id="historyMonthLabel">ತಿಂಗಳು</small>
+        <select id="historyMonth" class="input" onchange="updateHistoryFilter()"></select>
+      </label>
+    </div>
+  </div>
+  <div class="history-interest-summary">
+    <small id="historyInterestLabel">ಆಯ್ದ ಅವಧಿಯ ಒಟ್ಟು ಬಡ್ಡಿ</small>
+    <strong id="historyInterestTotal">₹0</strong>
+  </div>
+  <div id="historyList" class="history-records"></div>
+</section>
+<!-- =========================================================
+     ANALYTICS
+========================================================= -->
+<section id="analytics"
+         class="screen">
+  <div class="section-title">
+    <h2 id="anaHead">
+      📊 ಗುರಿ ವಿಶ್ಲೇಷಣೆ
+    </h2>
+  </div>
+  <div class="card">
+    <div class="metric-grid">
+      <div class="metric">
+        <small id="aM1">
+          ಪ್ರಸ್ತುತ
+        </small>
+        <b id="aCurrent">
+          ₹0
+        </b>
+      </div>
+      <div class="metric">
+        <small id="aM2">
+          ಉಳಿದದ್ದು
+        </small>
+        <b id="aRemaining">—</b>
+      </div>
+      <div class="metric">
+        <small id="aM3">
+          ವಾರದ ದರ
+        </small>
+        <b id="aWeeklyRate">
+          1.5%
+        </b>
+      </div>
+      <div class="metric">
+        <small id="aM4">
+          ಪ್ರಾರಂಭಿಕ ಸಮಯ
+        </small>
+        <b id="aStartTime"
+           style="font-size:12px">
+          —
+        </b>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <b id="anaChartHead">
+      ಕಳೆದ ದಾಖಲೆಗಳ ಪ್ರಗತಿ
+    </b>
+    <div id="chart"
+         class="chart">
+    </div>
+  </div>
+  <div class="card">
+    <b id="anaStatHead">
+      ಕಂಪೌಂಡಿಂಗ್ ಸ್ಟ್ರಾಟೆಜಿ ಸ್ಥಿತಿ
+    </b>
+    <p id="statusText"
+       style="
+       line-height:1.6;
+       color:#6d5a43">
+      —
+    </p>
+  </div>
+</section>
+<!-- =========================================================
+     PROFILE
+========================================================= -->
+<section id="profile"
+         class="screen">
+  <div class="profile-overview card">
+    <div class="profile-overview-head">
+      <button class="profile-large-avatar profile-avatar-edit" type="button" aria-label="Change profile photo" onclick="openSheet('profile')">
+        <span id="profilePageAvatar">👤</span>
+        <span class="profile-camera-badge" aria-hidden="true">📷</span>
+      </button>
+      <div class="profile-overview-copy">
+        <h2 id="profilePageName">ನನ್ನ ಗುರಿ</h2>
+        <p id="profileTagline">ಟ್ರ್ಯಾಕ್ • ಯೋಜನೆ • ಬೆಳವಣಿಗೆ</p>
+        <button class="profile-name-edit" onclick="openSheet('profile')">
+          <span>👤</span>
+          <b id="profileNameButton">ನನ್ನ ಗುರಿ</b>
+          <span aria-hidden="true">✎</span>
+        </button>
+      </div>
+    </div>
+    <div class="profile-metrics">
+      <div class="profile-metric">
+        <small id="pmGoalLabel">🎯 ನನ್ನ ಗುರಿ</small>
+        <b id="profileGoalAmount">—</b>
+      </div>
+      <div class="profile-metric">
+        <small id="pmStartLabel">📅 ಪ್ರಾರಂಭ ದಿನಾಂಕ</small>
+        <b id="profileStartDate">—</b>
+      </div>
+      <div class="profile-metric">
+        <small id="pmCurrentLabel">📊 ಪ್ರಸ್ತುತ ಮೊತ್ತ</small>
+        <b class="profile-current-green" id="profileCurrentAmount">₹0</b>
+      </div>
+      <div class="profile-metric">
+        <small id="pmProgressLabel">🟣 ಪ್ರಗತಿ</small>
+        <b id="profileProgress">0%</b>
+      </div>
+    </div>
+    <button class="profile-reward" onclick="showScreen('home')">
+      <span class="profile-reward-icon">🏆</span>
+      <span><b id="journeyTitle">ನನ್ನ ಪ್ರಯಾಣ</b><small id="journeySub">ಪ್ರತಿ ಹೆಜ್ಜೆಯೂ ಗುರಿಯತ್ತ ಕೊಂಡೊಯ್ಯುತ್ತದೆ!</small></span>
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+  
+</section>
+<!-- =========================================================
+     SETTINGS
+========================================================= -->
+<section id="language" class="screen">
+  <div class="settings-header">
+    <div class="settings-header-icon">
+      ⚙️
+    </div>
+    <h2 id="settingsTitle">
+      ಸೆಟ್ಟಿಂಗ್ಸ್
+    </h2>
+    <p id="settingsSubtitle">
+      ನಿಮ್ಮ ಆ್ಯಪ್ ಮತ್ತು ಭಾಷೆಯ ಆಯ್ಕೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ
+    </p>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-title"
+         id="languageSectionTitle">
+      ಭಾಷೆ
+    </div>
+    <div class="language-list"
+         id="languageList">
+      <!-- HINDI -->
+      <label class="language-card"
+             data-lang="hi"
+             onclick="selectLanguageCard(this)">
+        <div class="lang-info">
+          <span class="lang-icon">
+            अ
+          </span>
+          <div>
+            <span class="lang-name">
+              हिंदी
+            </span>
+            <span class="lang-native">
+              Hindi
+            </span>
+          </div>
+        </div>
+        <input type="radio"
+               name="language"
+               value="hi">
+      </label>
+      <!-- ENGLISH -->
+      <label class="language-card"
+             data-lang="en"
+             onclick="selectLanguageCard(this)">
+        <div class="lang-info">
+          <span class="lang-icon">
+            A
+          </span>
+          <div>
+            <span class="lang-name">
+              English
+            </span>
+            <span class="lang-native">
+              English
+            </span>
+          </div>
+        </div>
+        <input type="radio"
+               name="language"
+               value="en">
+      </label>
+      <!-- MARATHI -->
+      <label class="language-card"
+             data-lang="mr"
+             onclick="selectLanguageCard(this)">
+        <div class="lang-info">
+          <span class="lang-icon">
+            म
+          </span>
+          <div>
+            <span class="lang-name">
+              मराठी
+            </span>
+            <span class="lang-native">
+              Marathi
+            </span>
+          </div>
+        </div>
+        <input type="radio"
+               name="language"
+               value="mr">
+      </label>
+      <!-- KANNADA -->
+      <label class="language-card"
+             data-lang="kn"
+             onclick="selectLanguageCard(this)">
+        <div class="lang-info">
+          <span class="lang-icon">
+            ಕ
+          </span>
+          <div>
+            <span class="lang-name">
+              ಕನ್ನಡ
+            </span>
+            <span class="lang-native">
+              Kannada
+            </span>
+          </div>
+        </div>
+        <input type="radio"
+               name="language"
+               value="kn">
+      </label>
+    </div>
+    <button class="settings-save"
+            id="settingsSaveBtn"
+            onclick="saveSelectedLanguage()">
+      ಭಾಷೆ ಉಳಿಸಿ ✓
+    </button>
+  </div>
+</section>
+<section id="otherSettings" class="screen">
+  <div class="settings-section" id="otherSettingsSection">
+    <div class="settings-section-title"
+         id="otherSettingsTitle">
+      ಇತರೆ ಸೆಟ್ಟಿಂಗ್ಸ್
+    </div>
+          <div class="setting-item">
+      <div class="setting-left">
+        <div class="setting-icon">
+          🎯
+        </div>
+        <div>
+          <b id="goalSettingName">
+            ಗುರಿ
+          </b>
+          <small id="goalSettingValue">—</small>
+        </div>
+      </div>
+      <button type="button" class="setting-edit" id="goalSettingEdit" onclick="openSheet('profile')">✏️ Edit</button>
+    </div>
+    <div class="setting-item">
+      <div class="setting-left">
+        <div class="setting-icon">
+          📈
+        </div>
+        <div>
+          <b id="rateSettingName">
+            ವಾರದ ದರ
+          </b>
+          <small id="rateSettingValue">
+            1.5%
+          </small>
+        </div>
+      </div>
+      <span>⚙️</span>
+    </div>
+    <div class="setting-item">
+      <div class="setting-left">
+        <div class="setting-icon">
+          💾
+        </div>
+        <div>
+          <b id="dataSettingName">
+            ಡೇಟಾ
+          </b>
+          <small id="dataSettingValue">
+            ಈ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ
+          </small>
+        </div>
+      </div>
+      <span>✓</span>
+    </div>
+    <button class="secondary" onclick="resetData()">🗑️ <span id="resetDataLabel">ಡೇಟಾ ಅಳಿಸಿ</span></button>
+  </div>
+</section>
+</main>
+<!-- =========================================================
+     BOTTOM NAV
+========================================================= -->
+<nav class="bottom">
+  <button class="nav active"
+          data-screen="home"
+          onclick="showScreen('home')">
+    <span class="ni">
+      🏠
+    </span>
+    <span id="navHome">
+      ಮುಖಪುಟ
+    </span>
+  </button>
+  <button class="nav"
+          data-screen="history"
+          onclick="showScreen('history')">
+    <span class="ni">
+      📜
+    </span>
+    <span id="navHist">
+      ಇತಿಹಾಸ
+    </span>
+  </button>
+  <button class="nav"
+          data-screen="analytics"
+          onclick="showScreen('analytics')">
+    <span class="ni">
+      📊
+    </span>
+    <span id="navAna">
+      ವಿಶ್ಲೇಷಣೆ
+    </span>
+  </button>
+</nav>
+<a class="whatsapp-fab"
+   href="https://wa.me/"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Share on WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true">
+    <path d="M16 .5A15.4 15.4 0 0 0 2.8 23.8L1 31l7.4-1.9A15.5 15.5 0 1 0 16 .5Zm0 28.2a12.7 12.7 0 0 1-6.5-1.8l-.5-.3-4.4 1.2 1.2-4.3-.3-.5A12.8 12.8 0 1 1 16 28.7Zm7-9.6c-.4-.2-2.3-1.1-2.7-1.2-.4-.1-.6-.2-.9.2-.3.4-1 1.2-1.2 1.4-.2.3-.5.3-.9.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8l.6-.7c.2-.2.3-.4.4-.6.1-.3 0-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.7-.6-.6-.9-.6h-.8c-.3 0-.7.1-1 .5-.4.4-1.3 1.3-1.3 3.2s1.3 3.7 1.5 4c.2.3 2.6 4 6.3 5.6.9.4 1.7.7 2.3.8 1 .3 1.8.2 2.5.1.8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5Z"/>
+  </svg>
+</a>
+</div>
+</div>
+<!-- =========================================================
+     DRAWER — NEW DESIGN
+========================================================= -->
+<div id="drawerBackdrop"
+     class="drawer-backdrop"
+     onclick="if(event.target===this) toggleDrawer(false)">
+  <aside class="drawer" aria-label="Main menu">
+
+    <!-- Blue curved header -->
+    <div class="drawer-header-curve"></div>
+
+    <!-- Top nav -->
+    <div class="drawer-top-nav">
+      <span id="drawerMenuTitle">Menu</span>
+      <button class="drawer-close-btn" type="button" aria-label="Close menu" onclick="toggleDrawer(false)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Profile card -->
+    <section class="drawer-profile-card" aria-label="User profile">
+      <div class="drawer-avatar-container">
+        <button class="drawer-avatar" id="drawerAvatar" type="button"
+                aria-label="Change profile photo" onclick="openSheet('profile')">👤</button>
+      </div>
+
+      <div class="drawer-user-name">
+        <button class="drawer-profile-name" id="drawerName" type="button"
+                onclick="toggleDrawer(false); showScreen('profile')">ನನ್ನ ಗುರಿ</button>
+        <button class="drawer-edit-profile" type="button" aria-label="Edit profile"
+                onclick="openSheet('profile')">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+      </div>
+
+      <span class="drawer-user-status">
+        <i class="fa-solid fa-crown"></i> Premium User
+      </span>
+
+      <div class="drawer-user-stats">
+        <div class="drawer-stat-item">
+          <div class="drawer-stat-icon calendar">
+            <i class="fa-regular fa-calendar-days"></i>
+          </div>
+          <div class="drawer-stat-info">
+            <p>Joined Date</p>
+            <h4 id="drawerJoinedDate">—</h4>
+          </div>
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <div class="drawer-stat-item">
+          <div class="drawer-stat-icon star">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div class="drawer-stat-info">
+            <p>Rating</p>
+            <h4>Not rated</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu list -->
+    <nav class="drawer-menu-list" aria-label="Menu options">
+      <div class="drawer-group-title" id="drawerNavTitle">Navigation</div>
+      <button class="drawer-link" onclick="openDrawerScreen('home')">
+        <span class="drawer-menu-icon home"><i class="fa-solid fa-house"></i></span>
+        <span id="drawerHomeLabel">Home</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+      <button class="drawer-link" onclick="openDrawerScreen('history')">
+        <span class="drawer-menu-icon aqua"><i class="fa-solid fa-clock-rotate-left"></i></span>
+        <span id="drawerHistoryLabel">History</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+      <button class="drawer-link" onclick="openDrawerScreen('analytics')">
+        <span class="drawer-menu-icon lavender"><i class="fa-solid fa-chart-column"></i></span>
+        <span id="drawerAnalyticsLabel">Analytics</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+      <button class="drawer-link" onclick="openDrawerScreen('profile')">
+        <span class="drawer-menu-icon rose"><i class="fa-solid fa-user"></i></span>
+        <span id="drawerProfileLabel">Profile</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+
+      <div class="drawer-group-title" id="drawerToolsTitle">Tools</div>
+      <button class="drawer-link" onclick="toggleDrawer(false); openSheet('calculator')">
+        <span class="drawer-menu-icon lavender"><i class="fa-solid fa-calculator"></i></span>
+        <span id="drawerCalcLabel">Compounding Calculator</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+
+      <div class="drawer-group-title" id="drawerAppTitle">App</div>
+      <button class="drawer-link" onclick="toggleDrawer(false); openSheet('notifications')">
+        <span class="drawer-menu-icon mint"><i class="fa-solid fa-bell"></i></span>
+        <span id="drawerNotificationsLabel">Notifications</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+      <button class="drawer-link" onclick="showAppNotice(t('messages'))">
+        <span class="drawer-menu-icon rose"><i class="fa-solid fa-comment-dots"></i></span>
+        <span id="drawerMessagesLabel">Messages</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+      <button class="drawer-link" onclick="openDrawerScreen('language')">
+        <span class="drawer-menu-icon aqua"><i class="fa-solid fa-globe"></i></span>
+        <span id="drawerLanguageLabel">Language</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+
+      <div class="drawer-group-title" id="drawerSupportTitle">Support</div>
+      <button class="drawer-link" onclick="showAppNotice(t('helpSupport'))">
+        <span class="drawer-menu-icon mint"><i class="fa-solid fa-headset"></i></span>
+        <span id="drawerHelpLabel">Help &amp; Support</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+
+      <div class="drawer-group-title" id="drawerSettingsTitle">Settings</div>
+      <button class="drawer-link" onclick="openDrawerScreen('otherSettings')">
+        <span class="drawer-menu-icon gray"><i class="fa-solid fa-gear"></i></span>
+        <span id="drawerSettingsLabel">Settings</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+
+      <div class="drawer-group-title" id="drawerAccountTitle">Account</div>
+      <button class="drawer-link drawer-logout" onclick="logout()">
+        <span class="drawer-menu-icon pink"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+        <span id="drawerLogoutLabel">Logout</span>
+        <i class="fa-solid fa-chevron-right drawer-menu-arrow"></i>
+      </button>
+    </nav>
+  </aside>
+</div>
+<!-- SHEET -->
+<div id="overlay"
+     class="overlay"
+     onclick="if(event.target===this) closeSheet()">
+  <div id="sheet" class="sheet">
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* =========================================================
+   CONSTANTS
+========================================================= */
+/* =========================================================
+   STATE
+========================================================= */
+let state = {
+  name: "ನನ್ನ ಗುರಿ",
+  goal: 10000000,
+  current: 0,
+  startDate: "",
+  lastInterestDate: "",
+  weeklyRate: 1.5,
+  profilePhoto: "",
+  entries: [],
+  completedWeeks: [],
+  lang: "kn"
+};
+
+let expandedWeek = null;
+let historyYearFilter = "all";
+let historyMonthFilter = "all";
+let expandedHistoryEntry = null;
+
+/* =========================================================
+   TRANSLATIONS
+========================================================= */
+const dict = {
+kn:{
+  brandGoalTitle:"ಗುರಿ",
+  topSub:"ಗುರಿ ಟ್ರ್ಯಾಕರ್",
+  hero:"{goal} ಗುರಿ ಪ್ರಯಾಣ",
+  heroSub:"{name} — ಪ್ರತಿ ವಾರ ಹೂಡಿಕೆ ಮಾಡಿ {goal} ಗುರಿ ತಲುಪಿ",
+  current:"ಈವರೆಗೆ",
+  goal:"ಗುರಿ",
+  remaining:"ಬಾಕಿ",
+  milestones:"🏆 ಮೈಲಿಗಲ್ಲು ಪ್ರಗತಿ",
+  milestoneSub:"ಪ್ರಮುಖ ಹಂತಗಳ ತಲುಪುವಿಕೆ",
+  speed:"📊 ವಾರದ ವೇಗ ಮತ್ತು ದರ",
+  speedSub:"ವಾರದ ಬೆಳವಣಿಗೆಯ ಮಾಹಿತಿ",
+  rate:"ವಾರದ ದರ",
+  progress:"ಪ್ರಗತಿ",
+  totalProgress:"ಒಟ್ಟು ಪ್ರಗತಿ",
+  completed:"ಪೂರ್ಣ",
+  pending:"ಬಾಕಿ",
+  daysGoal:"ಮುಂದಿನ 5 ವಾರಗಳ ಗುರಿ",
+  setupPrompt:"ವಾರಗಳ ಲೆಕ್ಕ ತೋರಿಸಲು ಮೊದಲು ಗುರಿ ಮೊತ್ತ, ಆರಂಭಿಕ ಮೊತ್ತ ಮತ್ತು ವಾರದ ಬಡ್ಡಿ ದರ ನಮೂದಿಸಿ.",
+  week:"ವಾರ",
+  thisWeek:"ಈ ವಾರ",
+  weekPeriod:"ವಾರದ ಅವಧಿ",
+  weeklyTarget:"ಈ ವಾರದ ಗುರಿ",
+  weeklyGrowthRate:"ವಾರದ ಬೆಳವಣಿಗೆ ದರ",
+  weeklyDeposit:"ಜಮಾ",
+  weekOpening:"ಆರಂಭಿಕ ಬ್ಯಾಲೆನ್ಸ್",
+  weekInterest:"ಗಳಿಸಿದ ಬಡ್ಡಿ",
+  weekProjectedBalance:"ಬಡ್ಡಿಯ ನಂತರದ ಮೊತ್ತ",
+  weekStatus:"ಸ್ಥಿತಿ",
+  add:"+ ಮೊತ್ತ ಸೇರಿಸಿ",
+  addTitle:"ಇಂದಿನ ಪ್ರಗತಿ ಸೇರಿಸಿ",
+  addSub:"{goal} ಗುರಿಗೆ ನೀವು ಸೇರಿಸಿದ ಹೊಸ ಮೊತ್ತವನ್ನು ದಾಖಲಿಸಿ.",
+  amount:"ಮೊತ್ತ (₹)",
+  entryYear:"ವರ್ಷ",
+  noteLabel:"ಟಿಪ್ಪಣಿ",
+  saveProgress:"ಪ್ರಗತಿ ಉಳಿಸಿ ✓",
+  historyTitle:"ಪ್ರಗತಿ ಇತಿಹಾಸ",
+  historyYear:"ವರ್ಷ",
+  historyMonth:"ತಿಂಗಳು",
+  historyAll:"ಎಲ್ಲಾ",
+  historyInterestTotal:"ಆಯ್ದ ಅವಧಿಯ ಒಟ್ಟು ಬಡ್ಡಿ",
+  noRecords:"ಇನ್ನೂ ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ.",
+  added:"ಸೇರಿಸಲಾಗಿದೆ",
+  initialDeposit:"ಆರಂಭಿಕ ಠೇವಣಿ",
+  weekPerformance:"ವಾರದ ಕಾರ್ಯಕ್ಷಮತೆ",
+  interestCredit:"ವಾರದ ಬಡ್ಡಿ ಜಮಾ ({weeks} ವಾರ)",
+  interestBadge:"ಬಡ್ಡಿ",
+  analyticsTitle:"📊 ಗುರಿ ವಿಶ್ಲೇಷಣೆ",
+  startTime:"ಪ್ರಾರಂಭಿಕ ಸಮಯ",
+  pastProgress:"ಕಳೆದ ದಾಖಲೆಗಳ ಪ್ರಗತಿ",
+  strategy:"ಕಂಪೌಂಡಿಂಗ್ ಸ್ಟ್ರಾಟೆಜಿ ಸ್ಥಿತಿ",
+  strategyText:"ವಾರಕ್ಕೆ {rate}% ಬೆಳವಣಿಗೆ ಇದ್ದರೆ ಗುರಿ ತಲುಪಲು ಸುಮಾರು {weeks} ವಾರಗಳು ಬೇಕು.",
+  projected:"ಅಂದಾಜು",
+  actualBalance:"ನಿಜವಾದ ಮೊತ್ತ",
+  goalAchieved:"🏆 {goal} ಗುರಿ ಸಾಧಿಸಲಾಗಿದೆ!",
+  analyticsEstimatedWeeks:"ಅಂದಾಜು ವಾರಗಳು",
+  analyticsEstimatedTime:"ಅಂದಾಜು ಸಮಯ",
+  analyticsTotalDeposits:"ಒಟ್ಟು ಠೇವಣಿ",
+  analyticsTotalInterest:"ಒಟ್ಟು ಬಡ್ಡಿ",
+  analyticsProjectedBalance:"ಅಂದಾಜು ಅಂತಿಮ ಮೊತ್ತ",
+  analyticsFinalBalance:"ಅಂತಿಮ ಮೊತ್ತ",
+  analyticsWeeks:"ವಾರಗಳ ಸಂಖ್ಯೆ",
+  analyticsCompletionDate:"ಗುರಿ ಪೂರ್ಣಗೊಂಡ ದಿನಾಂಕ",
+  msgPeriodAlready:"ಈ ವಾರದ ಲೆಕ್ಕ ಈಗಾಗಲೇ ದಾಖಲಿಸಲಾಗಿದೆ.",
+  home:"ಮುಖಪುಟ",
+  navHistory:"ಇತಿಹಾಸ",
+  navAnalytics:"ವಿಶ್ಲೇಷಣೆ",
+  profileNav:"ಪ್ರೊಫೈಲ್",
+  settings:"ಸೆಟ್ಟಿಂಗ್ಸ್",
+  settingsTitle:"ಸೆಟ್ಟಿಂಗ್ಸ್",
+  settingsSubtitle:"ಆ್ಯಪ್ ಮತ್ತು ಭಾಷೆಯ ಆಯ್ಕೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ",
+  languageSection:"ಭಾಷೆ",
+  saveLanguage:"ಭಾಷೆ ಉಳಿಸಿ ✓",
+  otherSettings:"ಇತರೆ ಸೆಟ್ಟಿಂಗ್ಸ್",
+  goalSetting:"ಗುರಿ",
+  weeklySetting:"ವಾರದ ದರ",
+  dataSetting:"ಡೇಟಾ",
+  dataSaved:"ಈ ಸೆಷನ್‌ನಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯ",
+  resetData:"ಡೇಟಾ ಅಳಿಸಿ",
+  help:"ಸಹಾಯ",
+  profile:"👤 ಪ್ರೊಫೈಲ್",
+  profileTagline:"ಟ್ರ್ಯಾಕ್ • ಯೋಜನೆ • ಬೆಳವಣಿಗೆ",
+  myGoal:"ನನ್ನ ಗುರಿ",
+  startDateLabel:"📅 ಪ್ರಾರಂಭ ದಿನಾಂಕ",
+  currentAmountLabel:"📊 ಪ್ರಸ್ತುತ ಮೊತ್ತ",
+  progressLabel:"🟣 ಪ್ರಗತಿ",
+  goalLabel:"🎯 ನನ್ನ ಗುರಿ",
+  journeyTitle:"ನನ್ನ ಪ್ರಯಾಣ",
+  journeySub:"ಪ್ರತಿ ಹೆಜ್ಜೆಯೂ {goal} ಗುರಿಯತ್ತ ಕೊಂಡೊಯ್ಯುತ್ತದೆ!",
+  openCalculator:"ಕಂಪೌಂಡಿಂಗ್ ಕ್ಯಾಲ್ಕುಲೇಟರ್ ತೆರೆಯಿರಿ",
+  openSettings:"ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ",
+  update:"ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ✓",
+  profilePhotoHint:"ಫೋಟೋ ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ",
+  name:"ನಿಮ್ಮ ಹೆಸರು",
+  startAmount:"ಪ್ರಸ್ತುತ ಮೊತ್ತ (₹)",
+  targetAmount:"ನನ್ನ ಗುರಿ ಮೊತ್ತ (₹)",
+  editGoal:"ಗುರಿ ಮೊತ್ತ ಬದಲಿಸಿ",
+  startDate:"ಪ್ರಾರಂಭ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ",
+  weeklyRate:"ವಾರದ ಬೆಳವಣಿಗೆ ದರ (%)",
+  calcTitle:"🧮 ಕಂಪೌಂಡಿಂಗ್ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+  calcInitial:"ಆರಂಭಿಕ ಹೂಡಿಕೆ (₹)",
+  calcTarget:"ಗುರಿ ಮೊತ್ತ (₹)",
+  calcDeposit:"ಪ್ರತಿ ಅವಧಿಯ ಠೇವಣಿ (₹)",
+  calcFrequency:"ಕಂಪೌಂಡಿಂಗ್ ಅವಧಿ",
+  calcWeekly:"ವಾರಕ್ಕೊಮ್ಮೆ",
+  calcMonthly:"ತಿಂಗಳಿಗೊಮ್ಮೆ",
+  calcYearly:"ವರ್ಷಕ್ಕೊಮ್ಮೆ",
+  calcDaily:"ದೈನಂದಿನ",
+  calcQuarterly:"ತ್ರೈಮಾಸಿಕ",
+  calcRateLabel:"ಆಯ್ಕೆಮಾಡಿದ ಅವಧಿಯ ಬಡ್ಡಿ ದರ",
+  calcBreakdown:"ಗುರಿ ತಲುಪುವವರೆಗಿನ ಹಂತ-ಹಂತದ ವಿವರ",
+  calcPeriod:"ಅವಧಿ (#)",
+  calcDay:"ದಿನ",
+  calcWeek:"ವಾರ",
+  calcMonth:"ತಿಂಗಳು",
+  calcQuarter:"ತ್ರೈಮಾಸಿಕ",
+  calcYear:"ವರ್ಷ",
+  calcOpening:"ಆರಂಭಿಕ ಮೊತ್ತ (₹)",
+  calcInterest:"ಬಡ್ಡಿ (₹)",
+  calcClosing:"ಮುಕ್ತಾಯ ಮೊತ್ತ (₹)",
+  calcFrequencyLabel:"ಆವರ್ತನ",
+  calcTotalTime:"ಗುರಿ ತಲುಪಲು ಬೇಕಾಗುವ ಒಟ್ಟು ಸಮಯ",
+  calcApprox:"ಸುಮಾರು",
+  calcYears:"ವರ್ಷಗಳು",
+  calcValidation:"ಸರಿಯಾದ ಮೌಲ್ಯಗಳನ್ನು ನಮೂದಿಸಿ. ಗುರಿಯು ಪ್ರಸ್ತುತ ಹೂಡಿಕೆಗಿಂತ ಹೆಚ್ಚಿರಬೇಕು ಮತ್ತು ಬಡ್ಡಿ ದರವು 0 ಗಿಂತ ಹೆಚ್ಚಿರಬೇಕು.",
+  calcMaxPeriods:"2,000 ಅವಧಿಗಳಲ್ಲಿಯೂ ಗುರಿ ತಲುಪಿಲ್ಲ. ದರ ಅಥವಾ ಗುರಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.",
+  calcPeriodRate:"ಪ್ರತಿ ಅವಧಿಯ ದರ (%)",
+  calcTime:"ಗುರಿ ತುಂಬಲು ಅಂದಾಜು ಸಮಯ",
+  maturityDate:"ಮೆಚ್ಯೂರಿಟಿ ದಿನಾಂಕ",
+  estimateDisclaimer:"ನೀವು ನಮೂದಿಸಿದ ಬಡ್ಡಿದರ ಮತ್ತು ಠೇವಣಿಯನ್ನು ಪ್ರತಿಯೊಂದು ಅವಧಿಯಲ್ಲೂ ಪಾಲಿಸಿದರೆ, ಲೆಕ್ಕದ ಪ್ರಕಾರ ಈ ಅವಧಿಯಲ್ಲಿ ಗುರಿ ತಲುಪುತ್ತದೆ. ನಿಜವಾದ ಫಲಿತಾಂಶಗಳು ಬದಲಾಗಬಹುದು.",
+  calcResult:"ಅಂದಾಜು ಫಲಿತಾಂಶ",
+  calcCannotReach:"ಈ ಮೌಲ್ಯಗಳೊಂದಿಗೆ ಗುರಿ ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ದರ ಅಥವಾ ಮೊತ್ತ ಹೆಚ್ಚಿಸಿ.",
+  calculate:"ಲೆಕ್ಕ ಹಾಕಿ",
+  unitDays:"ದಿನಗಳು",
+  unitMonths:"ತಿಂಗಳುಗಳು",
+  unitYears:"ವರ್ಷಗಳು",
+  unitPeriods:"ಅವಧಿಗಳು",
+  drawerMenu:"ಮೆನು",
+  notifications:"ಅಧಿಸೂಚನೆಗಳು",
+  messages:"ಸಂದೇಶಗಳು",
+  helpSupport:"ಸಹಾಯ ಮತ್ತು ಬೆಂಬಲ",
+  drawerNavigate:"ನ್ಯಾವಿಗೇಶನ್",
+  drawerTools:"ಗುರಿ ಸಾಧನಗಳು",
+  drawerApp:"ಆ್ಯಪ್",
+  drawerSupport:"ಬೆಂಬಲ",
+  drawerAccount:"ಖಾತೆ",
+  drawerLogout:"ಲಾಗ್‌ಔಟ್ · ಖಾತೆ ಲಾಗಿನ್ ಇಲ್ಲ",
+  ourApps:"ನಮ್ಮ ಆ್ಯಪ್‌ಗಳು",
+  version:"ಆವೃತ್ತಿ 1.0.0",
+  msgLangSaved:"ಭಾಷೆ ಉಳಿಸಲಾಗಿದೆ ✓",
+  msgSaved:"ಪ್ರಗತಿ ಸೇರಿಸಲಾಗಿದೆ ✓",
+  msgProfileSaved:"ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ ✓",
+  msgRequiredFields:"ದಯವಿಟ್ಟು ಅಗತ್ಯವಿರುವ ಎಲ್ಲಾ ಖಾಲಿ ಜಾಗಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ",
+  msgInvalidAmount:"ದಯವಿಟ್ಟು ಸರಿಯಾದ ಮೊತ್ತ ನಮೂದಿಸಿ",
+  msgInitialLocked:"ಆರಂಭಿಕ ಮೊತ್ತವನ್ನು ಒಮ್ಮೆ ಸೇರಿಸಿದ ನಂತರ ಬದಲಾಯಿಸಲಾಗುವುದಿಲ್ಲ. ಹೆಚ್ಚುವರಿ ಮೊತ್ತವನ್ನು ಮಾತ್ರ ಸೇರಿಸಿ.",
+  msgWeekLocked:"ಮೊದಲು ಹಿಂದಿನ ವಾರವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ",
+  msgResetConfirm:"ನಿಮ್ಮ ಪ್ರಗತಿ ಮತ್ತು ಎಲ್ಲಾ ದಾಖಲೆಗಳನ್ನು ಅಳಿಸುವುದೇ?",
+  msgResetDone:"ಡೇಟಾ ಅಳಿಸಲಾಗಿದೆ",
+  msgLogout:"ಈ ಟ್ರ್ಯಾಕರ್‌ನಲ್ಲಿ ಲಾಗಿನ್ ಇಲ್ಲ.",
+  msgComingSoon:"ಶೀಘ್ರದಲ್ಲಿ ಬರಲಿದೆ",
+  congratulations:"🏆 ಅಭಿನಂದನೆಗಳು! {goal} ಗುರಿ ಪೂರ್ಣವಾಗಿದೆ!"
+},
+en:{
+  brandGoalTitle:"Goal",
+  topSub:"Goal Tracker",
+  hero:"{goal} Goal Journey",
+  heroSub:"{name} — invest every week toward {goal}",
+  current:"Current",
+  goal:"Goal",
+  remaining:"Remaining",
+  milestones:"🏆 Milestone Progress",
+  milestoneSub:"Key milestone achievements",
+  speed:"📊 Weekly Speed & Rate",
+  speedSub:"Weekly growth information",
+  rate:"Weekly Rate",
+  progress:"Progress",
+  totalProgress:"Total Progress",
+  completed:"Done",
+  pending:"Pending",
+  daysGoal:"Next 5 Weeks Goal",
+  setupPrompt:"Enter your goal amount, initial balance, and weekly interest rate to calculate the weeks.",
+  week:"Week",
+  thisWeek:"This week",
+  weekPeriod:"Week period",
+  weeklyTarget:"This week's target",
+  weeklyGrowthRate:"Weekly growth rate",
+  weeklyDeposit:"Deposit",
+  weekOpening:"Opening balance",
+  weekInterest:"Interest earned",
+  weekProjectedBalance:"Balance after interest",
+  weekStatus:"Status",
+  add:"+ Add Amount",
+  addTitle:"Add Today's Progress",
+  addSub:"Record the amount you added toward the {goal} goal.",
+  amount:"Amount (₹)",
+  entryYear:"Year",
+  noteLabel:"Note",
+  saveProgress:"Save Progress ✓",
+  historyTitle:"Progress History",
+  historyYear:"Year",
+  historyMonth:"Month",
+  historyAll:"All",
+  historyInterestTotal:"Total interest for selected period",
+  noRecords:"No records yet.",
+  added:"Added",
+  initialDeposit:"Initial Deposit",
+  weekPerformance:"Weekly performance",
+  interestCredit:"Weekly interest credited ({weeks} weeks)",
+  interestBadge:"Interest",
+  analyticsTitle:"📊 Goal Analytics",
+  startTime:"Start time",
+  pastProgress:"Recent records",
+  strategy:"Compounding strategy status",
+  strategyText:"With {rate}% weekly growth, you need about {weeks} weeks to reach the goal.",
+  projected:"Projected",
+  actualBalance:"Actual balance",
+  goalAchieved:"🏆 {goal} Goal Achieved!",
+  analyticsEstimatedWeeks:"Estimated weeks",
+  analyticsEstimatedTime:"Estimated time",
+  analyticsTotalDeposits:"Total deposits",
+  analyticsTotalInterest:"Total interest",
+  analyticsProjectedBalance:"Projected final amount",
+  analyticsFinalBalance:"Final balance",
+  analyticsWeeks:"Number of weeks",
+  analyticsCompletionDate:"Goal completion date",
+  msgPeriodAlready:"This week has already been recorded.",
+  home:"Home",
+  navHistory:"History",
+  navAnalytics:"Analytics",
+  profileNav:"Profile",
+  settings:"Settings",
+  settingsTitle:"Settings",
+  settingsSubtitle:"Manage your app and language preferences",
+  languageSection:"Language",
+  saveLanguage:"Save Language ✓",
+  otherSettings:"Other Settings",
+  goalSetting:"Goal",
+  weeklySetting:"Weekly rate",
+  dataSetting:"Data",
+  dataSaved:"Available for this session only",
+  resetData:"Reset Data",
+  help:"Help",
+  profile:"👤 Profile",
+  profileTagline:"Track • Plan • Grow",
+  myGoal:"My Goal",
+  startDateLabel:"📅 Start Date",
+  currentAmountLabel:"📊 Current Amount",
+  progressLabel:"🟣 Progress",
+  goalLabel:"🎯 My Goal",
+  journeyTitle:"My Journey",
+  journeySub:"Every step brings you closer to {goal}!",
+  openCalculator:"Open Compounding Calculator",
+  openSettings:"Open Settings",
+  update:"Update Profile ✓",
+  profilePhotoHint:"Tap to change profile photo",
+  name:"Your Name",
+  startAmount:"Current Amount (₹)",
+  targetAmount:"My Goal Amount (₹)",
+  editGoal:"Edit Goal Amount",
+  startDate:"Start Date & Time",
+  weeklyRate:"Weekly Growth Rate (%)",
+  calcTitle:"🧮 Compounding Calculator",
+  calcInitial:"Initial investment (₹)",
+  calcTarget:"Target amount (₹)",
+  calcDeposit:"Deposit per period (₹)",
+  calcFrequency:"Compounding frequency",
+  calcWeekly:"Weekly",
+  calcMonthly:"Monthly",
+  calcYearly:"Yearly",
+  calcDaily:"Daily",
+  calcQuarterly:"Quarterly",
+  calcRateLabel:"Interest rate for selected period",
+  calcBreakdown:"Step-by-step breakdown until the goal",
+  calcPeriod:"Period (#)",
+  calcDay:"Day",
+  calcWeek:"Week",
+  calcMonth:"Month",
+  calcQuarter:"Quarter",
+  calcYear:"Year",
+  calcOpening:"Opening amount (₹)",
+  calcInterest:"Interest (₹)",
+  calcClosing:"Closing amount (₹)",
+  calcFrequencyLabel:"Frequency",
+  calcTotalTime:"Total time to reach the goal",
+  calcApprox:"approximately",
+  calcYears:"years",
+  calcValidation:"Enter valid values. The target must be greater than the current investment and the interest rate must be above 0.",
+  calcMaxPeriods:"The goal was not reached within 2,000 periods. Check the rate or target.",
+  calcPeriodRate:"Growth rate per period (%)",
+  calcTime:"Estimated time to reach target",
+  maturityDate:"Maturity date",
+  estimateDisclaimer:"If you follow the entered interest rate and deposits in every period, this calculation reaches the goal in this time. Actual investment results may vary.",
+  calcResult:"Estimate",
+  calcCannotReach:"The target cannot be reached with these inputs. Increase the rate or amount.",
+  calculate:"Calculate",
+  unitDays:"days",
+  unitMonths:"months",
+  unitYears:"years",
+  unitPeriods:"periods",
+  drawerMenu:"Menu",
+  notifications:"Notifications",
+  messages:"Messages",
+  helpSupport:"Help & Support",
+  drawerNavigate:"Navigation",
+  drawerTools:"Tools",
+  drawerApp:"App",
+  drawerSupport:"Support",
+  drawerAccount:"Account",
+  drawerLogout:"Logout · no account login",
+  ourApps:"Our Apps",
+  version:"Version 1.0.0",
+  msgLangSaved:"Language saved ✓",
+  msgSaved:"Progress added ✓",
+  msgProfileSaved:"Profile updated ✓",
+  msgRequiredFields:"Please fill in all required fields.",
+  msgInvalidAmount:"Please enter a valid amount",
+  msgInitialLocked:"The initial amount cannot be changed once set. You can only add extra amounts.",
+  msgWeekLocked:"Complete the previous week first",
+  msgResetConfirm:"Clear your progress and all records?",
+  msgResetDone:"Data cleared",
+  msgLogout:"This tracker has no account login.",
+  msgComingSoon:"coming soon",
+  congratulations:"🏆 Congratulations! {goal} goal achieved!"
+},
+hi:{
+  brandGoalTitle:"लक्ष्य",
+  topSub:"लक्ष्य ट्रैकर",
+  hero:"{goal} लक्ष्य यात्रा",
+  heroSub:"{name} — हर हफ्ते निवेश करें और {goal} लक्ष्य पाएं",
+  current:"वर्तमान",
+  goal:"लक्ष्य",
+  remaining:"बाकी",
+  milestones:"🏆 माइलस्टोन प्रगति",
+  milestoneSub:"मुख्य लक्ष्य चरण",
+  speed:"📊 साप्ताहिक गति और दर",
+  speedSub:"साप्ताहिक वृद्धि जानकारी",
+  rate:"साप्ताहिक दर",
+  progress:"प्रगति",
+  totalProgress:"कुल प्रगति",
+  completed:"पूर्ण",
+  pending:"बाकी",
+  daysGoal:"अगले 5 सप्ताह का लक्ष्य",
+  setupPrompt:"सप्ताहों की गणना देखने के लिए लक्ष्य राशि, शुरुआती राशि और साप्ताहिक ब्याज दर दर्ज करें।",
+  week:"सप्ताह",
+  thisWeek:"इस सप्ताह",
+  weekPeriod:"सप्ताह की अवधि",
+  weeklyTarget:"इस सप्ताह का लक्ष्य",
+  weeklyGrowthRate:"साप्ताहिक वृद्धि दर",
+  weeklyDeposit:"जमा",
+  weekOpening:"शुरुआती बैलेंस",
+  weekInterest:"अर्जित ब्याज",
+  weekProjectedBalance:"ब्याज के बाद राशि",
+  weekStatus:"स्थिति",
+  add:"+ राशि जोड़ें",
+  addTitle:"आज की प्रगति जोड़ें",
+  addSub:"{goal} लक्ष्य के लिए जोड़ी गई राशि दर्ज करें।",
+  amount:"राशि (₹)",
+  entryYear:"वर्ष",
+  noteLabel:"नोट",
+  saveProgress:"प्रगति सेव करें ✓",
+  historyTitle:"प्रगति इतिहास",
+  historyYear:"वर्ष",
+  historyMonth:"महीना",
+  historyAll:"सभी",
+  historyInterestTotal:"चुनी अवधि का कुल ब्याज",
+  noRecords:"अभी कोई रिकॉर्ड नहीं।",
+  added:"जोड़ा गया",
+  initialDeposit:"शुरुआती जमा",
+  weekPerformance:"साप्ताहिक प्रदर्शन",
+  interestCredit:"साप्ताहिक ब्याज जमा ({weeks} सप्ताह)",
+  interestBadge:"ब्याज",
+  analyticsTitle:"📊 लक्ष्य विश्लेषण",
+  startTime:"शुरुआती समय",
+  pastProgress:"हाल के रिकॉर्ड",
+  strategy:"कंपाउंडिंग रणनीति स्थिति",
+  strategyText:"{rate}% साप्ताहिक वृद्धि के साथ लक्ष्य तक पहुंचने में लगभग {weeks} सप्ताह लगेंगे।",
+  projected:"अनुमानित",
+  actualBalance:"वास्तविक राशि",
+  goalAchieved:"🏆 {goal} लक्ष्य प्राप्त!",
+  analyticsEstimatedWeeks:"अनुमानित सप्ताह",
+  analyticsEstimatedTime:"अनुमानित समय",
+  analyticsTotalDeposits:"कुल जमा",
+  analyticsTotalInterest:"कुल ब्याज",
+  analyticsProjectedBalance:"अनुमानित अंतिम राशि",
+  analyticsFinalBalance:"अंतिम राशि",
+  analyticsWeeks:"सप्ताहों की संख्या",
+  analyticsCompletionDate:"लक्ष्य पूरा होने की तारीख",
+  msgPeriodAlready:"यह सप्ताह पहले ही दर्ज किया जा चुका है।",
+  home:"होम",
+  navHistory:"इतिहास",
+  navAnalytics:"विश्लेषण",
+  profileNav:"प्रोफ़ाइल",
+  settings:"सेटिंग्स",
+  settingsTitle:"सेटिंग्स",
+  settingsSubtitle:"ऐप और भाषा विकल्प प्रबंधित करें",
+  languageSection:"भाषा",
+  saveLanguage:"भाषा सेव करें ✓",
+  otherSettings:"अन्य सेटिंग्स",
+  goalSetting:"लक्ष्य",
+  weeklySetting:"साप्ताहिक दर",
+  dataSetting:"डेटा",
+  dataSaved:"केवल इस सत्र में उपलब्ध",
+  resetData:"डेटा रीसेट करें",
+  help:"मदद",
+  profile:"👤 प्रोफ़ाइल",
+  profileTagline:"ट्रैक • प्लान • ग्रो",
+  myGoal:"मेरा लक्ष्य",
+  startDateLabel:"📅 शुरुआती तारीख",
+  currentAmountLabel:"📊 वर्तमान राशि",
+  progressLabel:"🟣 प्रगति",
+  goalLabel:"🎯 मेरा लक्ष्य",
+  journeyTitle:"मेरी यात्रा",
+  journeySub:"हर कदम आपको {goal} लक्ष्य के करीब लाता है!",
+  openCalculator:"कंपाउंडिंग कैलकुलेटर खोलें",
+  openSettings:"सेटिंग्स खोलें",
+  update:"प्रोफ़ाइल अपडेट करें ✓",
+  profilePhotoHint:"फोटो बदलने के लिए टैप करें",
+  name:"आपका नाम",
+  startAmount:"वर्तमान राशि (₹)",
+  targetAmount:"मेरा लक्ष्य राशि (₹)",
+  editGoal:"लक्ष्य राशि बदलें",
+  startDate:"शुरुआती तारीख और समय",
+  weeklyRate:"साप्ताहिक वृद्धि दर (%)",
+  calcTitle:"🧮 कंपाउंडिंग कैलकुलेटर",
+  calcInitial:"शुरुआती निवेश (₹)",
+  calcTarget:"लक्ष्य राशि (₹)",
+  calcDeposit:"प्रति अवधि जमा (₹)",
+  calcFrequency:"कंपाउंडिंग अवधि",
+  calcWeekly:"साप्ताहिक",
+  calcMonthly:"मासिक",
+  calcYearly:"वार्षिक",
+  calcDaily:"दैनिक",
+  calcQuarterly:"तिमाही",
+  calcRateLabel:"चुनी गई अवधि की ब्याज दर",
+  calcBreakdown:"लक्ष्य तक चरण-दर-चरण विवरण",
+  calcPeriod:"अवधि (#)",
+  calcDay:"दिन",
+  calcWeek:"सप्ताह",
+  calcMonth:"महीना",
+  calcQuarter:"तिमाही",
+  calcYear:"साल",
+  calcOpening:"शुरुआती राशि (₹)",
+  calcInterest:"ब्याज (₹)",
+  calcClosing:"अंतिम राशि (₹)",
+  calcFrequencyLabel:"आवृत्ति",
+  calcTotalTime:"लक्ष्य तक पहुंचने में कुल समय",
+  calcApprox:"लगभग",
+  calcYears:"साल",
+  calcValidation:"सही मान दर्ज करें। लक्ष्य वर्तमान निवेश से अधिक और ब्याज दर 0 से अधिक होनी चाहिए।",
+  calcMaxPeriods:"2,000 अवधियों में लक्ष्य प्राप्त नहीं हुआ। दर या लक्ष्य जांचें।",
+  calcPeriodRate:"प्रति अवधि वृद्धि दर (%)",
+  calcTime:"लक्ष्य तक पहुंचने का अनुमानित समय",
+  maturityDate:"मैच्योरिटी तारीख",
+  estimateDisclaimer:"यदि आप हर अवधि में दर्ज ब्याज दर और जमा राशि का पालन करते हैं, तो गणना के अनुसार इस समय में लक्ष्य प्राप्त होगा। वास्तविक निवेश परिणाम अलग हो सकते हैं।",
+  calcResult:"अनुमान",
+  calcCannotReach:"इन मानों के साथ लक्ष्य तक नहीं पहुंचा जा सकता। दर या राशि बढ़ाएं।",
+  calculate:"गणना करें",
+  unitDays:"दिन",
+  unitMonths:"महीने",
+  unitYears:"साल",
+  unitPeriods:"अवधियां",
+  drawerMenu:"मेनू",
+  notifications:"सूचनाएं",
+  messages:"संदेश",
+  helpSupport:"सहायता और समर्थन",
+  drawerNavigate:"नेविगेशन",
+  drawerTools:"लक्ष्य के साधन",
+  drawerApp:"ऐप",
+  drawerSupport:"सहायता",
+  drawerAccount:"खाता",
+  drawerLogout:"लॉगआउट · कोई खाता लॉगिन नहीं",
+  ourApps:"हमारे ऐप्स",
+  version:"संस्करण 1.0.0",
+  msgLangSaved:"भाषा सेव हो गई ✓",
+  msgSaved:"प्रगति जोड़ी गई ✓",
+  msgProfileSaved:"प्रोफ़ाइल अपडेट हो गई ✓",
+  msgRequiredFields:"कृपया सभी आवश्यक खाली फ़ील्ड भरें।",
+  msgInvalidAmount:"कृपया सही राशि दर्ज करें",
+  msgInitialLocked:"शुरुआती राशि एक बार जोड़ने के बाद बदली नहीं जा सकती। आप केवल अतिरिक्त राशि जोड़ सकते हैं।",
+  msgWeekLocked:"पहले पिछला सप्ताह पूरा करें",
+  msgResetConfirm:"अपनी प्रगति और सभी रिकॉर्ड मिटाएं?",
+  msgResetDone:"डेटा मिटा दिया गया",
+  msgLogout:"इस ट्रैकर में कोई लॉगिन नहीं है।",
+  msgComingSoon:"जल्द आ रहा है",
+  congratulations:"🏆 बधाई! {goal} लक्ष्य पूरा हुआ!"
+},
+mr:{
+  brandGoalTitle:"गोल",
+  topSub:"गोल ट्रॅकर",
+  hero:"{goal} गोल प्रवास",
+  heroSub:"{name} — दर आठवड्याला गुंतवा आणि {goal} गोल गाठा",
+  current:"सध्याची",
+  goal:"गोल",
+  remaining:"बाकी",
+  milestones:"🏆 माइलस्टोन प्रगती",
+  milestoneSub:"मुख्य टप्प्यांची माहिती",
+  speed:"📊 साप्ताहिक वेग आणि दर",
+  speedSub:"साप्ताहिक वाढ माहिती",
+  rate:"साप्ताहिक दर",
+  progress:"प्रगती",
+  totalProgress:"एकूण प्रगती",
+  completed:"पूर्ण",
+  pending:"बाकी",
+  daysGoal:"पुढील 5 आठवड्यांचे लक्ष्य",
+  setupPrompt:"आठवड्यांची गणना पाहण्यासाठी लक्ष्य रक्कम, सुरुवातीची रक्कम आणि साप्ताहिक व्याजदर भरा.",
+  week:"आठवडा",
+  thisWeek:"या आठवड्यात",
+  weekPeriod:"आठवड्याचा कालावधी",
+  weeklyTarget:"या आठवड्याचे लक्ष्य",
+  weeklyGrowthRate:"आठवड्याचा वाढ दर",
+  weeklyDeposit:"जमा",
+  weekOpening:"सुरुवातीची शिल्लक",
+  weekInterest:"मिळालेले व्याज",
+  weekProjectedBalance:"व्याजानंतरची रक्कम",
+  weekStatus:"स्थिती",
+  add:"+ रक्कम जोडा",
+  addTitle:"आजची प्रगती जोडा",
+  addSub:"{goal} गोलसाठी जमा केलेली रक्कम नोंदवा.",
+  amount:"रक्कम (₹)",
+  entryYear:"वर्ष",
+  noteLabel:"टीप",
+  saveProgress:"प्रगती सेव्ह करा ✓",
+  historyTitle:"प्रगती इतिहास",
+  historyYear:"वर्ष",
+  historyMonth:"महिना",
+  historyAll:"सर्व",
+  historyInterestTotal:"निवडलेल्या कालावधीतील एकूण व्याज",
+  noRecords:"अजून रेकॉर्ड नाही.",
+  added:"जमा",
+  initialDeposit:"प्रारंभिक ठेव",
+  weekPerformance:"साप्ताहिक कामगिरी",
+  interestCredit:"साप्ताहिक व्याज जमा ({weeks} आठवडे)",
+  interestBadge:"व्याज",
+  analyticsTitle:"📊 गोल विश्लेषण",
+  startTime:"सुरुवातीची वेळ",
+  pastProgress:"अलीकडील रेकॉर्ड",
+  strategy:"कंपाउंडिंग स्ट्रॅटेजी स्थिती",
+  strategyText:"{rate}% साप्ताहिक वाढ असल्यास गोल गाठण्यासाठी सुमारे {weeks} आठवडे लागतील.",
+  projected:"अंदाजित",
+  actualBalance:"प्रत्यक्ष शिल्लक",
+  goalAchieved:"🏆 {goal} ध्येय साध्य झाले!",
+  analyticsEstimatedWeeks:"अंदाजित आठवडे",
+  analyticsEstimatedTime:"अंदाजित वेळ",
+  analyticsTotalDeposits:"एकूण ठेवी",
+  analyticsTotalInterest:"एकूण व्याज",
+  analyticsProjectedBalance:"अंदाजित अंतिम रक्कम",
+  analyticsFinalBalance:"अंतिम रक्कम",
+  analyticsWeeks:"आठवड्यांची संख्या",
+  analyticsCompletionDate:"ध्येय पूर्ण झाल्याची तारीख",
+  msgPeriodAlready:"हा आठवडा आधीच नोंदवला आहे.",
+  home:"होम",
+  navHistory:"इतिहास",
+  navAnalytics:"विश्लेषण",
+  profileNav:"प्रोफाइल",
+  settings:"सेटिंग्ज",
+  settingsTitle:"सेटिंग्ज",
+  settingsSubtitle:"ॲप आणि भाषेची निवड व्यवस्थापित करा",
+  languageSection:"भाषा",
+  saveLanguage:"भाषा सेव्ह करा ✓",
+  otherSettings:"इतर सेटिंग्ज",
+  goalSetting:"गोल",
+  weeklySetting:"साप्ताहिक दर",
+  dataSetting:"डेटा",
+  dataSaved:"फक्त या सत्रासाठी उपलब्ध",
+  resetData:"डेटा रीसेट करा",
+  help:"मदत",
+  profile:"👤 प्रोफाइल",
+  profileTagline:"ट्रॅक • प्लॅन • ग्रो",
+  myGoal:"माझे लक्ष्य",
+  startDateLabel:"📅 सुरुवातीची तारीख",
+  currentAmountLabel:"📊 सध्याची रक्कम",
+  progressLabel:"🟣 प्रगती",
+  goalLabel:"🎯 माझे लक्ष्य",
+  journeyTitle:"माझा प्रवास",
+  journeySub:"प्रत्येक पाऊल तुम्हाला {goal} गोलाच्या जवळ आणते!",
+  openCalculator:"कंपाउंडिंग कॅल्क्युलेटर उघडा",
+  openSettings:"सेटिंग्ज उघडा",
+  update:"प्रोफाइल अपडेट करा ✓",
+  profilePhotoHint:"फोटो बदलण्यासाठी टॅप करा",
+  name:"तुमचे नाव",
+  startAmount:"सध्याची रक्कम (₹)",
+  targetAmount:"माझी लक्ष्य रक्कम (₹)",
+  editGoal:"ध्येयाची रक्कम बदला",
+  startDate:"सुरुवातीची तारीख आणि वेळ",
+  weeklyRate:"साप्ताहिक वाढ दर (%)",
+  calcTitle:"🧮 कंपाउंडिंग कॅल्क्युलेटर",
+  calcInitial:"सुरुवातीची गुंतवणूक (₹)",
+  calcTarget:"लक्ष्य रक्कम (₹)",
+  calcDeposit:"प्रति कालावधीची ठेव (₹)",
+  calcFrequency:"कंपाउंडिंग कालावधी",
+  calcWeekly:"साप्ताहिक",
+  calcMonthly:"मासिक",
+  calcYearly:"वार्षिक",
+  calcDaily:"दररोज",
+  calcQuarterly:"त्रैमासिक",
+  calcRateLabel:"निवडलेल्या कालावधीचा व्याजदर",
+  calcBreakdown:"ध्येय गाठेपर्यंतचा टप्प्याटप्प्याचा तपशील",
+  calcPeriod:"कालावधी (#)",
+  calcDay:"दिवस",
+  calcWeek:"आठवडा",
+  calcMonth:"महिना",
+  calcQuarter:"त्रैमासिक",
+  calcYear:"वर्ष",
+  calcOpening:"सुरुवातीची रक्कम (₹)",
+  calcInterest:"व्याज (₹)",
+  calcClosing:"अखेरची रक्कम (₹)",
+  calcFrequencyLabel:"वारंवारता",
+  calcTotalTime:"ध्येय गाठण्यासाठी लागणारा एकूण वेळ",
+  calcApprox:"अंदाजे",
+  calcYears:"वर्षे",
+  calcValidation:"योग्य मूल्ये प्रविष्ट करा. लक्ष्य सध्याच्या गुंतवणुकीपेक्षा जास्त आणि व्याजदर 0 पेक्षा जास्त असावा.",
+  calcMaxPeriods:"2,000 कालावधीत लक्ष्य गाठले नाही. दर किंवा लक्ष्य तपासा.",
+  calcPeriodRate:"प्रति कालावधी वाढ दर (%)",
+  calcTime:"लक्ष्य गाठण्यासाठी अंदाजे वेळ",
+  maturityDate:"मॅच्युरिटी तारीख",
+  estimateDisclaimer:"तुम्ही प्रत्येक कालावधीत नोंदवलेला व्याजदर आणि ठेव पाळल्यास, गणनेनुसार या वेळेत लक्ष्य गाठले जाईल. प्रत्यक्ष गुंतवणुकीचे परिणाम वेगळे असू शकतात.",
+  calcResult:"अंदाज",
+  calcCannotReach:"या मूल्यांसह लक्ष्य गाठता येणार नाही. दर किंवा रक्कम वाढवा.",
+  calculate:"हिशोब करा",
+  unitDays:"दिवस",
+  unitMonths:"महिने",
+  unitYears:"वर्षे",
+  unitPeriods:"कालावधी",
+  drawerMenu:"मेनू",
+  notifications:"सूचना",
+  messages:"संदेश",
+  helpSupport:"मदत आणि सहाय्य",
+  drawerNavigate:"नेव्हिगेशन",
+  drawerTools:"ध्येय साधने",
+  drawerApp:"ॲप",
+  drawerSupport:"मदत",
+  drawerAccount:"खाते",
+  drawerLogout:"लॉगआउट · खाते लॉगिन नाही",
+  ourApps:"आमची ॲप्स",
+  version:"आवृत्ती 1.0.0",
+  msgLangSaved:"भाषा सेव्ह झाली ✓",
+  msgSaved:"प्रगती जोडली ✓",
+  msgProfileSaved:"प्रोफाइल अपडेट झाले ✓",
+  msgRequiredFields:"कृपया सर्व आवश्यक रिकामी फील्ड भरा.",
+  msgInvalidAmount:"कृपया योग्य रक्कम टाका",
+  msgInitialLocked:"सुरुवातीची रक्कम एकदा सेट केल्यानंतर बदलता येत नाही. तुम्ही फक्त अतिरिक्त रक्कम जोडू शकता.",
+  msgWeekLocked:"आधी मागील आठवडा पूर्ण करा",
+  msgResetConfirm:"तुमची प्रगती आणि सर्व रेकॉर्ड हटवायचे?",
+  msgResetDone:"डेटा हटवला",
+  msgLogout:"या ट्रॅकरमध्ये लॉगिन नाही.",
+  msgComingSoon:"लवकरच येत आहे",
+  congratulations:"🏆 अभिनंदन! {goal} गोल पूर्ण झाला!"
+}
+};
+
+/* =========================================================
+   HELPERS
+========================================================= */
+function t(key, vars){
+  let s = (dict[state.lang] && dict[state.lang][key]);
+  if(s === undefined || s === null) s = dict.en[key];
+  if(s === undefined || s === null) s = key;
+  const replacements = Object.assign({goal:formatGoalAmount(state.goal)}, vars || {});
+  Object.keys(replacements).forEach(function(k){
+    s = s.split("{" + k + "}").join(replacements[k]);
+  });
+  return s;
+}
+
+function esc(str){
+  return String(str === undefined || str === null ? "" : str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+function parseAmount(value){
+  const parsed = Number(String(value == null ? "" : value).replace(/,/g, ""));
+  return Number.isFinite(parsed) ? parsed : NaN;
+}
+
+function formatIndianAmount(value){
+  const raw = String(value == null ? "" : value).replace(/,/g, "").replace(/[^0-9.]/g, "");
+  const dotIndex = raw.indexOf(".");
+  const integerPart = (dotIndex < 0 ? raw : raw.slice(0, dotIndex)).replace(/\B(?=(\d{2})+(\d{3})$)/g, ",");
+  if(dotIndex < 0) return integerPart;
+  return integerPart + "." + raw.slice(dotIndex + 1).replace(/\./g, "").slice(0, 2);
+}
+
+function formatAmountField(input){
+  if(!input) return;
+  const digitsBeforeCaret = input.value.slice(0, input.selectionStart || 0).replace(/[^0-9]/g, "").length;
+  input.value = formatIndianAmount(input.value);
+  let caret = 0;
+  let digitsSeen = 0;
+  while(caret < input.value.length && digitsSeen < digitsBeforeCaret){
+    if(/[0-9]/.test(input.value[caret])) digitsSeen++;
+    caret++;
+  }
+  input.setSelectionRange(caret, caret);
+}
+
+function showInputValidationError(inputs, message){
+  const fields = (inputs || []).filter(Boolean);
+  fields.forEach(function(input){
+    input.classList.add("invalid");
+    input.setAttribute("aria-invalid", "true");
+  });
+  if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
+  if(fields.length){
+    fields[0].focus();
+    fields[0].scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  toast(message || t("msgRequiredFields"));
+}
+
+function showEmptyFieldsError(inputs){
+  const emptyFields = (inputs || []).filter(function(input){
+    return input && !String(input.value || "").trim();
+  });
+  if(!emptyFields.length) return false;
+  showInputValidationError(emptyFields, t("msgRequiredFields"));
+  return true;
+}
+
+function clearInputValidation(input){
+  if(!input) return;
+  input.classList.remove("invalid");
+  input.removeAttribute("aria-invalid");
+}
+
+function setRateChoice(inputId, rate){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  input.value = rate;
+  clearInputValidation(input);
+  document.querySelectorAll('[data-rate-for="' + inputId + '"]').forEach(function(button){
+    button.classList.toggle("selected", Number(button.dataset.rate) === Number(rate));
+  });
+  if(inputId === "setupRate") updateSetupMaturityDate();
+}
+
+function rateChoiceButtons(inputId){
+  return '<div class="rate-picks" aria-label="Quick interest rate choices">' +
+    [1,2,3,4].map(function(rate){
+      return '<button type="button" class="rate-pick' + (rate === 1.5 ? ' selected' : '') + '" data-rate-for="' + inputId + '" data-rate="' + rate + '" onclick="setRateChoice(\'' + inputId + '\',' + rate + ')">' + rate + '%</button>';
+    }).join("") + '</div>';
+}
+
+function setAmountChoice(inputId, amount){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  input.value = formatIndianAmount(amount);
+  clearInputValidation(input);
+  input.dispatchEvent(new Event("input", {bubbles:true}));
+}
+
+function amountChoiceButtons(inputId){
+  const amounts = [1000, 2000, 5000, 10000, 100000, 1000000, 10000000];
+  return '<div class="amount-picks" aria-label="Quick amount choices">' +
+    amounts.map(function(amount){
+      return '<button type="button" class="amount-pick" onclick="setAmountChoice(\'' + inputId + '\',' + amount + ')">' + formatIndianAmount(amount) + '</button>';
+    }).join("") + '</div>';
+}
+
+function money(n){
+  n = Math.max(0, Number(n) || 0);
+  if(n >= 10000000) return "₹" + (n / 10000000).toFixed(2) + "Cr";
+  if(n >= 100000) return "₹" + (n / 100000).toFixed(2) + "L";
+  if(n >= 1000) return "₹" + (n / 1000).toFixed(1) + "K";
+  return fullMoney(n);
+}
+
+function fullMoney(n){
+  const amount = Number(n) || 0;
+  return "₹" + amount.toLocaleString("en-IN", {
+    minimumFractionDigits:Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits:2
+  });
+}
+
+function formatGoalAmount(amount){
+  return fullMoney(amount);
+}
+
+function localeCode(){
+  return {kn:"kn-IN", hi:"hi-IN", mr:"mr-IN", en:"en-US"}[state.lang] || "en-IN";
+}
+
+function localDateTimeValue(d){
+  const pad = function(x){ return String(x).padStart(2,"0"); };
+  return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate())
+    + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+function parseStartDate(){
+  const d = new Date(state.startDate);
+  return Number.isNaN(d.getTime()) ? new Date() : d;
+}
+
+function calculatePeriod(openingBalance, rate, deposit){
+  const openingValue = Number(openingBalance);
+  const rateValue = Number(rate);
+  const depositValue = Number(deposit);
+  const opening = Number.isFinite(openingValue) ? Math.max(0, openingValue) : 0;
+  const interestRate = Number.isFinite(rateValue) ? Math.max(0, rateValue) : 0;
+  const actualDeposit = Number.isFinite(depositValue) ? Math.max(0, depositValue) : 0;
+  const calculatedInterest = opening * interestRate / 100;
+  const interest = Number.isFinite(calculatedInterest) ? calculatedInterest : 0;
+  const calculatedClosing = opening + interest + actualDeposit;
+  return {
+    opening:opening,
+    interest:interest,
+    deposit:actualDeposit,
+    closing:Number.isFinite(calculatedClosing) ? calculatedClosing : opening
+  };
+}
+
+function getCompletedPeriods(){
+  return state.entries.filter(function(entry){ return entry.type === "period"; })
+    .slice().sort(function(a,b){ return a.period - b.period; });
+}
+
+function getNextPeriodNumber(){
+  return getCompletedPeriods().reduce(function(max, entry){
+    return Math.max(max, Number(entry.period) || 0);
+  }, 0) + 1;
+}
+
+function getPeriodBaseBalance(){
+  const periods = getCompletedPeriods();
+  if(periods.length){
+    const last = periods[periods.length - 1];
+    const closing = Number(last.closing);
+    if(Number.isFinite(closing)) return Math.max(0, closing);
+    const recordedClosing = Number(last.opening) + (Number(last.interest) || 0) + (Number(last.deposit) || 0);
+    return Number.isFinite(recordedClosing) ? Math.max(0, recordedClosing) : 0;
+  }
+  const initial = state.entries.find(function(entry){ return entry.type === "initial"; });
+  if(initial && Number.isFinite(Number(initial.amount))) return Math.max(0, Number(initial.amount));
+  const pending = getPendingManualEntries().reduce(function(total, entry){ return total + (Number(entry.amount) || 0); }, 0);
+  return Math.max(0, (Number(state.current) || 0) - pending);
+}
+
+function getPendingManualEntries(){
+  let lastPeriodIndex = -1;
+  state.entries.forEach(function(entry, index){
+    if(entry.type === "period") lastPeriodIndex = index;
+  });
+  return state.entries.slice(lastPeriodIndex + 1).filter(function(entry){
+    return entry.type === "manual" && !Number.isFinite(Number(entry.period));
+  });
+}
+
+function formatCurrency(value){
+  const amount = Number(value);
+  return "₹" + (Number.isFinite(amount) ? amount : 0).toLocaleString("en-IN", {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+/* =========================================================
+   PERSISTENCE
+========================================================= */
+function save(){
+  // State is intentionally kept in memory only; nothing is written to browser storage.
+}
+
+function load(){
+  if(["kn","hi","en","mr"].indexOf(state.lang) === -1) state.lang = "kn";
+  if(!Array.isArray(state.entries)) state.entries = [];
+  if(!Array.isArray(state.completedWeeks)) state.completedWeeks = [];
+  const goal = Number(state.goal);
+  const current = Number(state.current);
+  const weeklyRate = Number(state.weeklyRate);
+  state.goal = Number.isFinite(goal) && goal > 0 ? goal : 10000000;
+  state.current = Number.isFinite(current) ? Math.max(0, current) : 0;
+  state.weeklyRate = Number.isFinite(weeklyRate) ? Math.max(0, weeklyRate) : 0;
+  if(!state.startDate) state.startDate = localDateTimeValue(new Date());
+  if(!state.lastInterestDate) state.lastInterestDate = localDateTimeValue(new Date());
+}
+
+/* =========================================================
+   UI TEXT
+========================================================= */
+function updateUiTexts(){
+  document.documentElement.lang = state.lang;
+  const map = {
+    topSubTitle:"topSub",
+    s1Title:"hero",
+    st1:"current",
+    st2:"goal",
+    st3:"remaining",
+    s2Title:"milestones",
+    s2Sub:"milestoneSub",
+    s3Title:"speed",
+    s3Sub:"speedSub",
+    stRate:"rate",
+    stProg:"progress",
+    progTitle:"totalProgress",
+    daysTitle:"daysGoal",
+    addLink:"add",
+    histHead:"historyTitle",
+    anaHead:"analyticsTitle",
+    aM1:"actualBalance",
+    aM2:"remaining",
+    aM3:"rate",
+    aM4:"startTime",
+    anaChartHead:"pastProgress",
+    anaStatHead:"strategy",
+    navHome:"home",
+    navHist:"navHistory",
+    navAna:"navAnalytics",
+    navProfile:"profileNav",
+    profileTagline:"profileTagline",
+    pmGoalLabel:"goalLabel",
+    pmStartLabel:"startDateLabel",
+    pmCurrentLabel:"currentAmountLabel",
+    pmProgressLabel:"progressLabel",
+    journeyTitle:"journeyTitle",
+    journeySub:"journeySub",
+    profileSettingsLink:"openSettings",
+    ourAppsSummary:"ourApps",
+    drawerVersion:"version",
+    drawerMenuTitle:"drawerMenu",
+    drawerNavTitle:"drawerNavigate",
+    drawerToolsTitle:"drawerTools",
+    drawerAppTitle:"drawerApp",
+    drawerSupportTitle:"drawerSupport",
+    drawerSettingsTitle:"settings",
+    drawerAccountTitle:"drawerAccount",
+    drawerHomeLabel:"home",
+    drawerHistoryLabel:"navHistory",
+    drawerAnalyticsLabel:"navAnalytics",
+    drawerProfileLabel:"profileNav",
+    drawerCalcLabel:"openCalculator",
+    drawerNotificationsLabel:"notifications",
+    drawerMessagesLabel:"messages",
+    drawerLanguageLabel:"languageSection",
+    drawerHelpLabel:"helpSupport",
+    drawerSettingsLabel:"settings",
+    drawerLogoutLabel:"drawerLogout",
+    settingsTitle:"languageSection",
+    settingsSubtitle:"settingsSubtitle",
+    languageSectionTitle:"languageSection",
+    settingsSaveBtn:"saveLanguage",
+    otherSettingsTitle:"otherSettings",
+    goalSettingName:"goalSetting",
+    goalSettingEdit:"editGoal",
+    rateSettingName:"weeklySetting",
+    dataSettingName:"dataSetting",
+    dataSettingValue:"dataSaved",
+    resetDataLabel:"resetData"
+  };
+  Object.keys(map).forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) el.textContent = t(map[id]);
+  });
+  const goalTitle = document.getElementById("brandGoalTitle");
+  if(goalTitle) goalTitle.textContent = formatGoalAmount(state.goal);
+  document.title = formatGoalAmount(state.goal) + " " + t("topSub");
+  selectCurrentLanguageCard();
+}
+
+function selectLanguageCard(element){
+  document.querySelectorAll(".language-card").forEach(function(card){
+    card.classList.remove("selected");
+    const radio = card.querySelector('input[type="radio"]');
+    if(radio) radio.checked = false;
+  });
+  element.classList.add("selected");
+  const radio = element.querySelector('input[type="radio"]');
+  if(radio) radio.checked = true;
+}
+
+function selectCurrentLanguageCard(){
+  document.querySelectorAll(".language-card").forEach(function(card){
+    const selected = (card.dataset.lang === state.lang);
+    card.classList.toggle("selected", selected);
+    const radio = card.querySelector('input[type="radio"]');
+    if(radio) radio.checked = selected;
+  });
+}
+
+function saveSelectedLanguage(){
+  const selected = document.querySelector(".language-card.selected");
+  if(!selected) return;
+  state.lang = selected.dataset.lang;
+  save();
+  render();
+  showScreen("home");
+  toggleDrawer(false);
+  toast(t("msgLangSaved"));
+}
+
+/* =========================================================
+   WEEK LOGIC
+========================================================= */
+function getWeeklyTargetAmount(){
+  return 0;
+}
+
+function isWeekUnlocked(week){
+  if(week <= 1) return true;
+  if(state.completedWeeks.indexOf(week) > -1) return true;
+  return state.completedWeeks.indexOf(week - 1) > -1;
+}
+
+function getWeekEntry(week){
+  const period = getCompletedPeriods().find(function(entry){ return entry.period === week; });
+  if(period) return period;
+  return state.entries.find(function(entry){ return entry.type === "week" && entry.week === week; }) || null;
+}
+
+function getWeekStartDate(week){
+  const start = parseStartDate();
+  start.setHours(0,0,0,0);
+  start.setDate(start.getDate() + (week - 1) * 7);
+  return start;
+}
+
+function getWeekDateRange(week){
+  const start = getWeekStartDate(week);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  const fmt = function(date){
+    try{
+      return new Intl.DateTimeFormat(localeCode(), {day:"numeric", month:"long"}).format(date);
+    }catch(e){
+      return date.toLocaleDateString();
+    }
+  };
+  return fmt(start) + " – " + fmt(end);
+}
+
+function toggleWeek(week){
+  if(!isWeekUnlocked(week) || week !== getNextPeriodNumber()){
+    toast(t("msgWeekLocked"));
+    return;
+  }
+  if(getWeekEntry(week)){
+    toast(t("msgPeriodAlready"));
+    return;
+  }
+  if(state.current >= state.goal){
+    toast(t("congratulations"));
+    return;
+  }
+
+  const opening = getPeriodBaseBalance();
+  const pendingDeposits = getPendingManualEntries();
+  const deposit = pendingDeposits.reduce(function(total, entry){ return total + (Number(entry.amount) || 0); }, 0);
+  const result = calculatePeriod(opening, state.weeklyRate, deposit);
+  const weekDate = getWeekStartDate(week);
+  const date = new Intl.DateTimeFormat(localeCode(), {day:"numeric", month:"short", year:"numeric"}).format(weekDate);
+  const record = {
+    type:"period",
+    period:week,
+    date:date,
+    opening:result.opening,
+    deposit:result.deposit,
+    interestRate:Number(state.weeklyRate) || 0,
+    interest:result.interest,
+    closing:result.closing,
+    status:"completed",
+    createdAt:weekDate.toISOString(),
+    note:t("weekPerformance") + " — " + t("week") + " " + week
+  };
+  state.current = result.closing;
+  pendingDeposits.forEach(function(entry){ entry.period = week; });
+  state.entries.push(record);
+  state.completedWeeks.push(week);
+  state.completedWeeks.sort(function(a,b){ return a - b; });
+  save();
+  render();
+}
+
+function toggleWeekDetails(week){
+  expandedWeek = (expandedWeek === week) ? null : week;
+  renderWeeks();
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+function updateProfileAvatar(){
+  const avatar = document.getElementById("profileTopAvatar");
+  if(avatar){
+    avatar.innerHTML = state.profilePhoto
+      ? '<img src="' + state.profilePhoto + '" alt="Profile photo">'
+      : "👤";
+  }
+  const pageAvatar = document.getElementById("profilePageAvatar");
+  if(pageAvatar){
+    pageAvatar.innerHTML = state.profilePhoto
+      ? '<img src="' + state.profilePhoto + '" alt="Profile photo">'
+      : "👤";
+  }
+}
+
+function render(){
+  updateProfileAvatar();
+
+  const goalAmount = Number(state.goal);
+  const currentAmount = Number(state.current);
+  const validGoal = Number.isFinite(goalAmount) && goalAmount > 0;
+  const safeCurrent = Number.isFinite(currentAmount) ? currentAmount : 0;
+  const p = validGoal ? Math.min(100, Math.max(0, (safeCurrent / goalAmount) * 100)) : 0;
+  const rem = validGoal ? Math.max(0, goalAmount - safeCurrent) : 0;
+
+  /* Drawer profile card */
+  document.getElementById("drawerName").textContent = state.name;
+  const joinedDate = document.getElementById("drawerJoinedDate");
+  const drawerStartDate = state.startDate ? new Date(state.startDate) : null;
+  if(joinedDate){
+    joinedDate.textContent = drawerStartDate && !Number.isNaN(drawerStartDate.getTime())
+      ? drawerStartDate.toLocaleDateString("en-IN", {day:"2-digit", month:"short", year:"numeric"})
+      : "—";
+  }
+  const drawerAvatar = document.getElementById("drawerAvatar");
+  drawerAvatar.innerHTML = state.profilePhoto
+    ? '<img src="' + state.profilePhoto + '" alt="Profile photo">'
+    : "👤";
+
+  /* Profile screen */
+  document.getElementById("profilePageName").textContent = state.name;
+  document.getElementById("profileNameButton").textContent = state.name;
+  document.getElementById("profileGoalAmount").textContent = fullMoney(state.goal);
+  document.getElementById("profileCurrentAmount").textContent = fullMoney(state.current);
+  document.getElementById("profileProgress").textContent = p.toFixed(1) + "%";
+  const sd = state.startDate ? new Date(state.startDate) : null;
+  document.getElementById("profileStartDate").textContent =
+    (sd && !Number.isNaN(sd.getTime()))
+      ? sd.toLocaleDateString(localeCode(), {day:"2-digit", month:"long", year:"numeric"})
+      : "—";
+
+  /* Home carousel */
+  document.getElementById("currentTop").textContent = fullMoney(state.current);
+  document.getElementById("goalTop").textContent = money(state.goal);
+  document.getElementById("remainingTop").textContent = fullMoney(rem);
+  document.getElementById("percent").textContent = p.toFixed(1) + "%";
+  document.getElementById("fill").style.width = p + "%";
+  document.getElementById("doneText").textContent = fullMoney(state.current) + " " + t("completed");
+  document.getElementById("targetText").textContent = fullMoney(state.goal) + " " + t("goal");
+  document.getElementById("heroText").textContent = t("heroSub", {name:state.name});
+  document.getElementById("quote").textContent = rem === 0
+    ? t("congratulations")
+    : "🔥 " + fullMoney(rem) + " " + t("remaining");
+
+  /* Milestones */
+  [25, 50, 75].forEach(function(percent){
+    const amount = state.goal * percent / 100;
+    const label = document.getElementById("m" + percent + "Label");
+    const value = document.getElementById("m" + percent);
+    if(label) label.textContent = formatGoalAmount(amount);
+    if(value) value.textContent = state.current >= amount ? "✓ " + t("completed") : t("pending");
+  });
+
+  /* Speed slide */
+  document.getElementById("sRate").textContent = state.weeklyRate + "%";
+  document.getElementById("sPercent").textContent = p.toFixed(1) + "%";
+
+  renderWeeks();
+  renderHistory();
+  renderAnalytics();
+  renderSettingsValues();
+  updateUiTexts();
+
+  const whatsappLink = document.querySelector(".whatsapp-fab");
+  if(whatsappLink){
+    whatsappLink.href = "https://wa.me/?text=" + encodeURIComponent("I'm tracking my " + formatGoalAmount(state.goal) + " goal!");
+  }
+
+  const addLink = document.getElementById("addLink");
+  const setupFormVisible = state.current < state.goal &&
+    !(Number(state.goal) > 0 && Number(state.current) > 0 && Number(state.weeklyRate) > 0 && Number(state.goal) > Number(state.current));
+  if(addLink){
+    addLink.textContent = setupFormVisible ? t("help") : t("add");
+    addLink.onclick = setupFormVisible
+      ? showSetupHelp
+      : function(){ openSheet("add"); };
+  }
+}
+
+function renderSettingsValues(){
+  const g = document.getElementById("goalSettingValue");
+  if(g) g.textContent = fullMoney(state.goal);
+  const r = document.getElementById("rateSettingValue");
+  if(r) r.textContent = state.weeklyRate + "%";
+}
+
+function recordInitialDeposit(amount){
+  const date = parseStartDate();
+  state.entries.push({
+    type:"initial",
+    amount:amount,
+    date:new Intl.DateTimeFormat(localeCode(), {day:"numeric", month:"long", year:"numeric"}).format(date),
+    createdAt:date.toISOString(),
+    note:t("initialDeposit")
+  });
+}
+
+function showSetupHelp(){
+  toast(t("setupPrompt"));
+}
+
+function saveTrackerSetup(){
+  if(state.current > 0){
+    toast(t("msgInitialLocked"));
+    return;
+  }
+  const goalField = document.getElementById("setupGoal");
+  const initialField = document.getElementById("setupInitial");
+  const rateField = document.getElementById("setupRate");
+  if(showEmptyFieldsError([goalField, initialField, rateField])) return;
+  const goal = parseAmount(goalField.value);
+  const initial = parseAmount(initialField.value);
+  const rate = Number(rateField.value);
+  if(!Number.isFinite(goal) || !Number.isFinite(initial) || !Number.isFinite(rate) || goal <= initial || initial <= 0 || rate <= 0){
+    showInputValidationError([goalField, initialField, rateField], t("calcValidation"));
+    return;
+  }
+  state.goal = goal;
+  state.current = initial;
+  recordInitialDeposit(initial);
+  state.weeklyRate = rate;
+  render();
+}
+
+function renderWeeks(){
+  const box = document.getElementById("days");
+  box.innerHTML = "";
+
+  if(Number(state.goal) > 0 && Number(state.current) >= Number(state.goal)){
+    box.innerHTML = '<div class="empty" style="padding:20px 10px">' + t("congratulations") + '</div>';
+    return;
+  }
+
+  if(!(Number(state.goal) > 0 && Number(state.current) > 0 && Number(state.weeklyRate) > 0 && Number(state.goal) > Number(state.current))){
+    box.innerHTML =
+      '<div class="empty" style="padding:20px 10px">' + t("setupPrompt") + '</div>' +
+      '<label>' + t("goalSetting") + ' (₹) <span class="required-star" aria-label="required">*</span><input id="setupGoal" class="input" type="text" inputmode="decimal" placeholder="10,00,000" oninput="formatAmountField(this); updateSetupMaturityDate()"></label>' +
+      '<label>' + t("startAmount") + ' <span class="required-star" aria-label="required">*</span><input id="setupInitial" class="input" type="text" inputmode="decimal" placeholder="5,00,000" oninput="formatAmountField(this); updateSetupMaturityDate()"></label>' +
+      '<label>' + t("weeklyRate") + ' <span class="required-star" aria-label="required">*</span><input id="setupRate" class="input" type="number" min="0.01" step="0.1" placeholder="1.5" oninput="updateSetupMaturityDate()"></label>' +
+      rateChoiceButtons("setupRate") +
+      '<div id="setupMaturity" class="calculator-result" hidden></div>' +
+      '<button type="button" class="primary" onclick="saveTrackerSetup()">' + t("calculate") + '</button>';
+    return;
+  }
+
+  const records = getCompletedPeriods();
+  const lastPeriod = records.reduce(function(max, entry){ return Math.max(max, entry.period); }, 0);
+  const firstWeek = Math.floor(lastPeriod / 5) * 5 + 1;
+  const plannedDeposit = getWeeklyTargetAmount();
+  let projectedBalance = getPeriodBaseBalance();
+  let pendingProjectionDeposit = getPendingManualEntries().reduce(function(total, entry){ return total + (Number(entry.amount) || 0); }, 0);
+  let projectionReached = projectedBalance >= state.goal;
+  const rate = Math.max(0, Number(state.weeklyRate) || 0);
+
+  for(let i = firstWeek; i < firstWeek + 5; i++){
+    const entry = getWeekEntry(i);
+    const done = !!entry;
+    const opening = done ? Number(entry.opening) || 0 : projectedBalance;
+    const deposit = done ? Number(entry.deposit) || 0 : (i === getNextPeriodNumber() ? pendingProjectionDeposit : plannedDeposit);
+    const calc = done ? {
+      opening:opening,
+      interest:Number(entry.interest) || 0,
+      deposit:deposit,
+      closing:Number.isFinite(Number(entry.closing)) ? Number(entry.closing) : opening + (Number(entry.interest) || 0) + deposit
+    } : (projectionReached
+      ? {opening:opening, interest:0, deposit:0, closing:opening}
+      : calculatePeriod(opening, rate, deposit));
+    projectedBalance = calc.closing;
+    if(!done){
+      pendingProjectionDeposit = 0;
+      if(projectedBalance >= state.goal) projectionReached = true;
+    }
+    const unlocked = isWeekUnlocked(i);
+    const expanded = expandedWeek === i;
+    const dateRange = getWeekDateRange(i);
+    const status = !unlocked ? t("msgWeekLocked") : (done ? t("completed") : (state.current >= state.goal ? t("goalAchieved") : t("projected")));
+    const weekButton = done || !unlocked || state.current >= state.goal ? "disabled" : "";
+    const equation = t("weekOpening") + " " + formatCurrency(calc.opening) +
+      " + " + t("weekInterest") + " " + formatCurrency(calc.interest) +
+      " + " + t("calcDeposit") + " " + formatCurrency(calc.deposit) +
+      " = " + t("weekProjectedBalance") + " " + formatCurrency(calc.closing);
+
+    box.innerHTML +=
+      '<div class="day ' + (done ? "done " : "") + (expanded ? "expanded " : "") + (unlocked ? "" : "locked") + '">' +
+        '<button class="check ' + (unlocked ? "" : "locked") + '" type="button" aria-pressed="' + done + '" ' + weekButton + ' onclick="toggleWeek(' + i + ')">' +
+          (done ? "✓" : (unlocked ? "" : "🔒")) +
+        '</button>' +
+        '<button class="week-summary" type="button" onclick="toggleWeekDetails(' + i + ')">' +
+          '<strong>' + t("week") + ' ' + i + (done ? '' : ' · ' + (i === getNextPeriodNumber() ? t("thisWeek") : t("projected"))) + '</strong>' +
+          '<small>' + esc(dateRange) + '</small>' +
+        '</button>' +
+        '<div class="week-preview"><span class="week-preview-target">' + t("weekProjectedBalance") + '</span>' +
+          '<span class="week-preview-interest">' + formatCurrency(calc.closing) + '</span>' +
+          '<span class="week-preview-target">' + status + '</span></div>' +
+        '<button class="expand-week" type="button" aria-label="' + t("week") + ' ' + i + '" onclick="toggleWeekDetails(' + i + ')">⌄</button>' +
+        (expanded ?
+          '<div class="week-details">' +
+            '<div class="week-detail"><small>' + t("weekOpening") + '</small><b>' + formatCurrency(calc.opening) + '</b></div>' +
+            '<div class="week-detail"><small>' + t("calcDeposit") + '</small><b>' + formatCurrency(calc.deposit) + '</b></div>' +
+            '<div class="week-detail"><small>' + t("weeklyGrowthRate") + '</small><b>' + (done ? entry.interestRate : rate) + '%</b></div>' +
+            '<div class="week-detail"><small>' + t("weekInterest") + '</small><b>+' + formatCurrency(calc.interest) + '</b></div>' +
+            '<div class="week-detail"><small>' + t("weekProjectedBalance") + '</small><b>' + formatCurrency(calc.closing) + '</b></div>' +
+            '<div class="week-detail"><small>' + t("weekPeriod") + '</small><b>' + esc(dateRange) + '</b></div>' +
+            '<div class="week-detail"><small>' + t("weekStatus") + '</small><b>' + status + '</b></div>' +
+            '<div class="week-detail" style="grid-column:1/-1"><small>' + t("calcResult") + '</small><b>' + equation + '</b></div>' +
+          '</div>'
+        : "") +
+      '</div>';
+  }
+}
+
+function getHistoryEntryDate(entry){
+  if(entry.createdAt){
+    const savedDate = new Date(entry.createdAt);
+    if(!Number.isNaN(savedDate.getTime())) return savedDate;
+  }
+  if(entry.type === "period" && Number.isFinite(Number(entry.period))){
+    return getWeekStartDate(Number(entry.period));
+  }
+  const parsedDate = new Date(entry.date);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
+function formatHistoryDate(entry, includeDay){
+  const date = getHistoryEntryDate(entry);
+  if(!date) return entry.date || "—";
+  try{
+    return new Intl.DateTimeFormat(localeCode(), {
+      day:includeDay ? "2-digit" : undefined,
+      month:includeDay ? "short" : "long",
+      year:"numeric"
+    }).format(date);
+  }catch(e){
+    return date.toLocaleDateString();
+  }
+}
+
+function updateHistoryFilter(){
+  const yearSelect = document.getElementById("historyYear");
+  const monthSelect = document.getElementById("historyMonth");
+  if(yearSelect) historyYearFilter = yearSelect.value;
+  if(monthSelect) historyMonthFilter = monthSelect.value;
+  renderHistory();
+}
+
+function toggleHistoryFilters(){
+  const card = document.getElementById("historyFilterCard");
+  const button = document.getElementById("historyFilterToggle");
+  if(!card || !button) return;
+  card.hidden = !card.hidden;
+  button.textContent = card.hidden ? "📅" : "✕";
+  button.setAttribute("aria-label", card.hidden ? "Show history filters" : "Hide history filters");
+  button.title = card.hidden ? "Show history filters" : "Hide history filters";
+}
+
+function renderHistory(){
+  const list = document.getElementById("historyList");
+  const filters = document.getElementById("historyFilters");
+  if(filters) filters.hidden = state.entries.length === 0;
+  const yearSelect = document.getElementById("historyYear");
+  const monthSelect = document.getElementById("historyMonth");
+  const yearLabel = document.getElementById("historyYearLabel");
+  const monthLabel = document.getElementById("historyMonthLabel");
+  const interestLabel = document.getElementById("historyInterestLabel");
+  if(yearLabel) yearLabel.textContent = t("historyYear");
+  if(monthLabel) monthLabel.textContent = t("historyMonth");
+  if(interestLabel) interestLabel.textContent = t("historyInterestTotal");
+
+  const now = new Date();
+  const years = state.entries.map(function(entry){
+    const date = getHistoryEntryDate(entry);
+    return date ? date.getFullYear() : null;
+  }).filter(function(year){ return year !== null; });
+  let firstYear = Math.min(parseStartDate().getFullYear(), now.getFullYear());
+  let lastYear = now.getFullYear();
+  years.forEach(function(year){
+    firstYear = Math.min(firstYear, year);
+    lastYear = Math.max(lastYear, year);
+  });
+  const yearOptions = ['<option value="all">' + t("historyAll") + '</option>'];
+  for(let year = lastYear; year >= firstYear; year--){
+    yearOptions.push('<option value="' + year + '">' + year + '</option>');
+  }
+  if(yearSelect){
+    yearSelect.innerHTML = yearOptions.join("");
+    if(historyYearFilter !== "all" && years.indexOf(Number(historyYearFilter)) === -1 && Number(historyYearFilter) < firstYear){
+      historyYearFilter = "all";
+    }
+    yearSelect.value = historyYearFilter;
+  }
+
+  const availableMonths = new Set();
+  state.entries.forEach(function(entry){
+    const date = getHistoryEntryDate(entry);
+    if(date && (historyYearFilter === "all" || date.getFullYear() === Number(historyYearFilter))){
+      availableMonths.add(date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0"));
+    }
+  });
+  if(historyMonthFilter !== "all" && !availableMonths.has(historyMonthFilter)){
+    historyMonthFilter = "all";
+  }
+  const monthOptions = ['<option value="all">' + t("historyAll") + '</option>'];
+  Array.from(availableMonths).sort().forEach(function(monthKey){
+    const parts = monthKey.split("-");
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const monthName = new Intl.DateTimeFormat(localeCode(), {month:"long"}).format(new Date(year, month - 1, 1));
+    monthOptions.push('<option value="' + monthKey + '">' + esc(monthName) + '</option>');
+  });
+  if(monthSelect){
+    monthSelect.innerHTML = monthOptions.join("");
+    monthSelect.value = historyMonthFilter;
+  }
+
+  const filteredEntries = state.entries.filter(function(entry){
+    const date = getHistoryEntryDate(entry);
+    if(!date) return historyYearFilter === "all" && historyMonthFilter === "all";
+    const entryMonth = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+    return (historyYearFilter === "all" || date.getFullYear() === Number(historyYearFilter)) &&
+      (historyMonthFilter === "all" || entryMonth === historyMonthFilter);
+  });
+  const interestCents = filteredEntries.reduce(function(total, entry){
+    if(entry.type === "period" || entry.type === "week") return total + Math.round((Number(entry.interest) || 0) * 100);
+    if(entry.type === "interest") return total + Math.round((Number(entry.amount) || 0) * 100);
+    return total;
+  }, 0);
+  const interestTotal = document.getElementById("historyInterestTotal");
+  if(interestTotal) interestTotal.textContent = fullMoney(interestCents / 100);
+
+  if(!filteredEntries.length){
+    list.innerHTML = '<div class="empty history-empty">' + t("noRecords") + '</div>';
+    return;
+  }
+
+  list.innerHTML = filteredEntries.slice().reverse().map(function(e){
+    const date = getHistoryEntryDate(e);
+    const day = date ? new Intl.DateTimeFormat(localeCode(), {day:"2-digit"}).format(date) : "—";
+    const monthYear = date ? new Intl.DateTimeFormat(localeCode(), {month:"short", year:"numeric"}).format(date) : esc(e.date || "—");
+    const key = e.type + "-" + (e.period || e.createdAt || e.date || "record");
+    const expanded = expandedHistoryEntry === key;
+    const toggleAttrs = 'type="button" data-history-key="' + esc(key) + '" aria-expanded="' + expanded + '" onclick="toggleHistoryEntry(this.dataset.historyKey)"';
+
+    if(e.type === "initial"){
+      const amount = Number(e.amount) || 0;
+      return '<button ' + toggleAttrs + ' class="history-record initial-record" style="grid-template-columns:minmax(0,1fr) auto 15px">' +
+        '<span class="history-date-block"><b>' + esc(t("initialDeposit")) + '</b><small>' + esc(monthYear) + '</small></span>' +
+        '<span class="history-record-summary"><b>+' + fullMoney(amount) + '</b><small>' + esc(t("initialDeposit")) + '</small></span>' +
+        '<span class="history-record-arrow" aria-hidden="true">›</span>' +
+        (expanded ? '<span class="history-record-detail">' + esc(t("initialDeposit")) + ' · ' + esc(formatHistoryDate(e)) + '</span>' : '') +
+      '</button>';
+    }
+
+    if(e.type === "period" || e.type === "week"){
+      const opening = Number(e.opening) || 0;
+      const deposit = Number(e.deposit) || 0;
+      const interest = Number(e.interest) || 0;
+      const closing = Number.isFinite(Number(e.closing)) ? Number(e.closing) : opening + deposit + interest;
+      const weekNumber = Number(e.period || e.week) || 0;
+      const rate = Number(e.interestRate) || 0;
+      const detail = formatCurrency(opening) + ' + ' + formatCurrency(deposit) + ' + ' + formatCurrency(interest) + ' = ' + formatCurrency(closing) + (rate ? ' · ' + rate + '%' : '');
+      return '<button ' + toggleAttrs + ' class="history-record">' +
+        '<span class="history-date-block"><b>' + esc(t("week") + " " + weekNumber) + '</b><small>' + esc(day) + '<br>' + esc(monthYear) + '</small></span>' +
+        '<span class="history-record-values">' +
+          '<span>' + esc(t("weekOpening")) + ': ' + formatCurrency(opening) + '</span>' +
+          '<span>' + esc(t("weeklyDeposit")) + ': ' + formatCurrency(deposit) + '</span>' +
+          '<span class="history-interest-value">' + esc(t("weekInterest")) + ': ' + formatCurrency(interest) + '</span>' +
+          '<span class="history-closing-value">' + esc(t("weekProjectedBalance")) + ': ' + formatCurrency(closing) + '</span>' +
+        '</span>' +
+        '<span class="history-record-summary"><b>+' + formatCurrency(interest) + '</b><small>' + esc(t("interestBadge")) + '</small></span>' +
+        '<span class="history-record-arrow" aria-hidden="true">›</span>' +
+        (expanded ? '<span class="history-record-detail">' + esc(detail) + '</span>' : '') +
+      '</button>';
+    }
+
+    const isManual = e.type === "manual";
+    const amount = Number(e.amount) || 0;
+    const recordClass = isManual ? "manual-record" : "history-interest-record";
+    const label = e.type === "interest" ? t("interestBadge") : t("added");
+    return '<button ' + toggleAttrs + ' class="history-record ' + recordClass + '" style="grid-template-columns:minmax(0,1fr) auto 15px">' +
+      '<span class="history-date-block"><b>' + esc(label) + '</b><small>' + esc(monthYear) + '</small></span>' +
+      '<span class="history-record-summary"><b>+' + fullMoney(amount) + '</b><small>' + esc(label) + '</small></span>' +
+      '<span class="history-record-arrow" aria-hidden="true">›</span>' +
+      (expanded ? '<span class="history-record-detail">' + esc(e.note || label) + ' · ' + esc(formatHistoryDate(e)) + '</span>' : '') +
+    '</button>';
+  }).join("");
+}
+
+function toggleHistoryEntry(key){
+  expandedHistoryEntry = expandedHistoryEntry === key ? null : key;
+  renderHistory();
+}
+
+function calculateGoalProjection(initialBalance, goal, rate, deposit){
+  const initial = Number(initialBalance);
+  const target = Number(goal);
+  let balance = Number.isFinite(initial) ? Math.max(0, initial) : 0;
+  if(!Number.isFinite(target) || target <= 0){
+    return {weeks:0, totalInterest:0, totalDeposits:0, finalAmount:balance, reached:false};
+  }
+  let weeks = 0;
+  let totalInterest = 0;
+  let totalDeposits = 0;
+  while(balance < target && weeks < 5200){
+    const period = calculatePeriod(balance, rate, deposit);
+    balance = period.closing;
+    totalInterest += period.interest;
+    totalDeposits += period.deposit;
+    weeks++;
+    if(period.closing <= period.opening) break;
+  }
+  return {
+    weeks:weeks,
+    totalInterest:Number.isFinite(totalInterest) ? totalInterest : 0,
+    totalDeposits:Number.isFinite(totalDeposits) ? totalDeposits : 0,
+    finalAmount:balance,
+    reached:balance >= target
+  };
+}
+
+function getProjectedMaturityDate(periodCount, frequency, startDate){
+  const date = new Date(startDate || new Date());
+  if(Number.isNaN(date.getTime())) return "—";
+  if(frequency === "daily") date.setDate(date.getDate() + periodCount);
+  else if(frequency === "weekly") date.setDate(date.getDate() + periodCount * 7);
+  else if(frequency === "monthly") date.setMonth(date.getMonth() + periodCount);
+  else if(frequency === "quarterly") date.setMonth(date.getMonth() + periodCount * 3);
+  else if(frequency === "annually") date.setFullYear(date.getFullYear() + periodCount);
+  return date.toLocaleDateString(localeCode(), {day:"numeric", month:"long", year:"numeric"});
+}
+
+function updateSetupMaturityDate(){
+  const output = document.getElementById("setupMaturity");
+  if(!output) return;
+  const goal = parseAmount(document.getElementById("setupGoal").value);
+  const initial = parseAmount(document.getElementById("setupInitial").value);
+  const rate = Number(document.getElementById("setupRate").value);
+  if(!Number.isFinite(goal) || !Number.isFinite(initial) || !Number.isFinite(rate) || goal <= initial || initial <= 0 || rate <= 0){
+    output.hidden = true;
+    output.innerHTML = "";
+    return;
+  }
+  const projection = calculateGoalProjection(initial, goal, rate, 0);
+  if(!projection.reached){
+    output.hidden = true;
+    output.innerHTML = "";
+    return;
+  }
+  output.hidden = false;
+  output.innerHTML = '<div class="maturity-highlight"><small>' + t("maturityDate") + '</small><strong>' +
+    getProjectedMaturityDate(projection.weeks, "weekly", new Date()) + '</strong></div>' +
+    '<br><small>' + t("estimateDisclaimer") + '</small>';
+}
+
+function renderAnalytics(){
+  const goalAmount = Number(state.goal);
+  const currentAmount = Number(state.current);
+  const rem = Number.isFinite(goalAmount) && goalAmount > 0
+    ? Math.max(0, goalAmount - (Number.isFinite(currentAmount) ? currentAmount : 0))
+    : 0;
+  document.getElementById("aCurrent").textContent = fullMoney(state.current);
+  document.getElementById("aRemaining").textContent = fullMoney(rem);
+  document.getElementById("aWeeklyRate").textContent = state.weeklyRate + "%";
+
+  const sd = state.startDate ? new Date(state.startDate) : null;
+  document.getElementById("aStartTime").textContent =
+    (sd && !Number.isNaN(sd.getTime()))
+      ? sd.toLocaleString(localeCode(), {day:"2-digit", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"})
+      : "—";
+
+  const projection = calculateGoalProjection(state.current, state.goal, state.weeklyRate, getWeeklyTargetAmount());
+  const actualPeriods = getCompletedPeriods();
+  const totalInterest = actualPeriods.reduce(function(total, entry){
+    return total + (Number(entry.interest) || 0);
+  }, 0);
+  const totalDeposits = state.entries.reduce(function(total, entry){
+    if(entry.type === "initial") return total + (Number(entry.amount) || 0);
+    if(entry.type === "period") return total + (Number(entry.deposit) || 0);
+    if(entry.type === "manual" && !Number.isFinite(Number(entry.period))) return total + (Number(entry.amount) || 0);
+    if(entry.type === "week") return total + Math.max(0, (Number(entry.amount) || 0) - (Number(entry.interest) || 0));
+    return total;
+  }, 0);
+  const actualGoalReached = state.current >= state.goal;
+  let completionDate = "—";
+  if(actualGoalReached){
+    const completionEntry = state.entries.slice().reverse().find(function(entry){
+      return entry.type === "period" || entry.type === "manual";
+    });
+    completionDate = completionEntry ? completionEntry.date : "—";
+  }
+  const duration = projection.reached
+    ? projection.weeks + " " + t("week") + " (≈ " + Math.ceil(projection.weeks / 52) + " " + t("unitYears") + ")"
+    : "—";
+  document.getElementById("statusText").textContent = actualGoalReached
+    ? t("goalAchieved") + "\n" + t("goal") + ": " + formatGoalAmount(state.goal) + "\n" +
+      t("analyticsTotalDeposits") + ": " + formatCurrency(totalDeposits) + "\n" +
+      t("analyticsTotalInterest") + ": " + formatCurrency(totalInterest) + "\n" +
+      t("analyticsFinalBalance") + ": " + formatCurrency(state.current) + "\n" +
+      t("analyticsWeeks") + ": " + actualPeriods.length + "\n" +
+      t("startTime") + ": " + (sd && !Number.isNaN(sd.getTime()) ? sd.toLocaleDateString(localeCode()) : "—") + "\n" +
+      t("analyticsCompletionDate") + ": " + completionDate
+    :       t("goal") + ": " + formatGoalAmount(state.goal) + "\n" +
+      t("analyticsEstimatedWeeks") + ": " + (projection.reached ? projection.weeks : "—") + "\n" +
+      t("analyticsEstimatedTime") + ": " + duration + "\n" +
+      t("analyticsTotalInterest") + ": " + formatCurrency(totalInterest + projection.totalInterest) + "\n" +
+      t("analyticsTotalDeposits") + ": " + formatCurrency(totalDeposits + projection.totalDeposits) + "\n" +
+      t("analyticsProjectedBalance") + ": " + formatCurrency(projection.finalAmount);
+  document.getElementById("statusText").style.whiteSpace = "pre-line";
+
+  /* chart */
+  const vals = state.entries.slice(-8).map(function(e){ return e.type === "period" ? e.closing : e.amount; });
+  const chart = document.getElementById("chart");
+  if(!vals.length){
+    chart.innerHTML = '<div class="empty" style="width:100%">' + t("noRecords") + '</div>';
+    return;
+  }
+  const max = Math.max.apply(null, vals.concat([1]));
+  chart.innerHTML = vals.map(function(v, i){
+    return '<div class="col" title="' + fullMoney(v) + '" style="height:' + Math.max(10, v / max * 135) + 'px">' +
+             '<span>' + (i + 1) + '</span>' +
+           '</div>';
+  }).join("");
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+function toggleDrawer(open){
+  document.getElementById("drawerBackdrop").classList.toggle("show", open);
+}
+
+function openDrawerScreen(id){
+  toggleDrawer(false);
+  showScreen(id);
+}
+
+function openDrawerSettings(sectionId){
+  toggleDrawer(false);
+  showScreen("settings");
+  setTimeout(function(){
+    const section = document.getElementById(sectionId);
+    if(section) section.scrollIntoView({behavior:"smooth", block:"start"});
+  }, 0);
+}
+
+function showAppNotice(appName){
+  toggleDrawer(false);
+  toast(appName + " — " + t("msgComingSoon"));
+}
+
+function logout(){
+  toggleDrawer(false);
+  toast(t("msgLogout"));
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(function(x){ x.classList.remove("active"); });
+  document.querySelector(".app").classList.toggle("history-view", id === "history");
+  const target = document.getElementById(id);
+  if(target) target.classList.add("active");
+  document.querySelectorAll(".nav").forEach(function(x){
+    x.classList.toggle("active", x.dataset.screen === id);
+  });
+  window.scrollTo(0, 0);
+}
+
+function getCarouselSlideIndex(){
+  const carousel = document.getElementById("homeCarousel");
+  const slides = carousel ? Array.from(carousel.children) : [];
+  if(!slides.length) return 0;
+  let closestIndex = 0;
+  let closestDistance = Infinity;
+  slides.forEach(function(slide, index){
+    const distance = Math.abs(carousel.scrollLeft - (slide.offsetLeft - slides[0].offsetLeft));
+    if(distance < closestDistance){
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+  return closestIndex;
+}
+
+function scrollToSlide(index){
+  const carousel = document.getElementById("homeCarousel");
+  const slides = carousel ? Array.from(carousel.children) : [];
+  if(!slides[index]) return;
+  carousel.scrollTo({left: slides[index].offsetLeft - slides[0].offsetLeft, behavior:"smooth"});
+}
+
+function updateDots(){
+  const index = getCarouselSlideIndex();
+  document.querySelectorAll(".carousel-dots .dot").forEach(function(d, i){
+    d.classList.toggle("active", i === index);
+  });
+}
+
+/* =========================================================
+   SHEETS
+========================================================= */
+function getEntryYearOptions(){
+  const currentYear = new Date().getFullYear();
+  const joinedYear = parseStartDate().getFullYear();
+  const firstYear = Math.min(joinedYear, currentYear);
+  const lastYear = Math.max(joinedYear, currentYear);
+  let options = "";
+  for(let year = lastYear; year >= firstYear; year--){
+    options += '<option value="' + year + '"' + (year === currentYear ? ' selected' : '') + '>' + year + '</option>';
+  }
+  return options;
+}
+
+function openSheet(type){
+  const s = document.getElementById("sheet");
+  const overlay = document.getElementById("overlay");
+
+  if(type === "calculator"){
+    overlay.className = "overlay show calculator-open";
+  }else if(type === "profile"){
+    overlay.className = "overlay show profile-open";
+  }else{
+    overlay.className = "overlay show";
+  }
+
+  if(type === "notifications"){
+    const noticeText = state.current >= state.goal
+      ? t("congratulations")
+      : (state.current > 0 ? t("heroSub", {name:state.name}) : t("setupPrompt"));
+    s.innerHTML =
+      '<div class="handle"></div>' +
+      '<button class="close" type="button" aria-label="Close notifications" onclick="closeSheet()">✕</button>' +
+      '<h2>🔔 ' + t("notifications") + '</h2>' +
+      '<div class="card" style="margin-top:18px">' +
+        '<b>' + t("actualBalance") + ': ' + fullMoney(state.current) + '</b>' +
+        '<p style="margin:8px 0 0;color:#776a58;line-height:1.6">' + noticeText + '</p>' +
+        '<p style="margin:10px 0 0;color:#776a58"><b>' + t("goal") + ':</b> ' + fullMoney(state.goal) + '</p>' +
+      '</div>' +
+      '<button class="primary" type="button" onclick="closeSheet(); showScreen(\'home\')">' + t("home") + '</button>';
+  }
+  else if(type === "add"){
+    s.innerHTML =
+      '<div class="handle"></div>' +
+      '<button class="close" onclick="closeSheet()">✕</button>' +
+      '<h2>' + t("addTitle") + '</h2>' +
+      '<p style="color:#776a58">' + t("addSub") + '</p>' +
+      '<label>' + t("amount") + ' <span class="required-star" aria-label="required">*</span></label>' +
+      '<input id="addAmount" class="input" type="text" inputmode="decimal" placeholder="40,000" oninput="formatAmountField(this)">' +
+      '<label>' + t("entryYear") + '</label>' +
+      '<select id="addYear" class="input">' + getEntryYearOptions() + '</select>' +
+      '<label>' + t("noteLabel") + '</label>' +
+      '<input id="addNote" class="input" type="text" placeholder="' + t("goal") + '">' +
+      '<button class="primary" onclick="addEntry()">' + t("saveProgress") + '</button>';
+  }
+  else if(type === "calculator"){
+    s.innerHTML =
+      '<div class="handle"></div>' +
+      '<button class="close" onclick="closeSheet()">✕</button>' +
+      '<h2>' + t("calcTitle") + '</h2>' +
+      '<label>' + t("calcInitial") + ' <span class="required-star" aria-label="required">*</span></label>' +
+      '<input id="calcInitial" class="input" type="text" inputmode="decimal" value="' + formatIndianAmount(state.current) + '" oninput="formatAmountField(this)">' +
+      '<label>' + t("calcTarget") + ' <span class="required-star" aria-label="required">*</span></label>' +
+      '<input id="calcTarget" class="input" type="text" inputmode="decimal" value="' + formatIndianAmount(state.goal) + '" oninput="formatAmountField(this)">' +
+      '<label>' + t("calcDeposit") + '</label>' +
+      '<input id="calcDeposit" class="input" type="text" inputmode="decimal" value="' + formatIndianAmount(getWeeklyTargetAmount()) + '" oninput="formatAmountField(this)">' +
+      '<label>' + t("calcFrequency") + '</label>' +
+      '<select id="calcFrequency" class="input" onchange="updateCalculatorRateLabel()">' +
+        '<option value="daily">' + t("calcDaily") + '</option>' +
+        '<option value="weekly" selected>' + t("calcWeekly") + '</option>' +
+        '<option value="monthly">' + t("calcMonthly") + '</option>' +
+        '<option value="quarterly">' + t("calcQuarterly") + '</option>' +
+        '<option value="annually">' + t("calcYearly") + '</option>' +
+      '</select>' +
+      '<label id="calcRateLabel">' + t("calcRateLabel") + ' (% ' + t("calcWeekly") + ') <span class="required-star" aria-label="required">*</span></label>' +
+      '<input id="calcRate" class="input" type="number" min="0" step="0.01" value="' + state.weeklyRate + '">' +
+      rateChoiceButtons("calcRate") +
+      '<button class="primary" onclick="runCalculator()">' + t("calculate") + '</button>' +
+      '<div id="calcResultContainer"></div>';
+  }
+  else if(type === "profile"){
+    s.innerHTML =
+      '<div class="handle"></div>' +
+      '<button class="close" onclick="closeSheet()">✕</button>' +
+      '<h2>' + t("profile") + '</h2>' +
+      '<div class="profile-photo-wrap">' +
+        '<label class="profile-photo-button">' +
+          '<span id="sheetProfileAvatar">' + (state.profilePhoto ? '<img src="' + state.profilePhoto + '">' : "👤") + '</span>' +
+          '<input type="file" class="profile-photo-input" accept="image/*" onchange="handleProfilePhoto(event)">' +
+        '</label>' +
+        '<span class="profile-photo-hint">' + t("profilePhotoHint") + '</span>' +
+      '</div>' +
+      '<div class="profile-grid">' +
+        '<div class="profile-field">' +
+          '<label>' + t("name") + '</label>' +
+          '<input id="profileNameInput" class="input" type="text">' +
+        '</div>' +
+        '<div class="profile-field">' +
+          '<label>' + t("startAmount") + ' <span class="required-star" aria-label="required">*</span></label>' +
+          '<input id="profileCurrentInput" class="input" type="text" inputmode="decimal"' + (state.current > 0 ? ' readonly title="' + t("msgInitialLocked") + '"' : ' oninput="formatAmountField(this)"') + '>' +
+        '</div>' +
+        '<div class="profile-field">' +
+          '<label>' + t("targetAmount") + ' <span class="required-star" aria-label="required">*</span></label>' +
+          '<input id="profileGoalInput" class="input" type="text" inputmode="decimal" oninput="formatAmountField(this)">' +
+        '</div>' +
+        '<div class="profile-field">' +
+          '<label>' + t("startDate") + '</label>' +
+          '<input id="profileDateInput" class="input" type="datetime-local">' +
+        '</div>' +
+        '<div class="profile-field">' +
+          '<label>' + t("weeklyRate") + ' <span class="required-star" aria-label="required">*</span></label>' +
+          '<input id="profileRateInput" class="input" type="number" min="0" step="0.1">' +
+          rateChoiceButtons("profileRateInput") +
+        '</div>' +
+      '</div>' +
+      '<button class="primary" onclick="saveProfile()">' + t("update") + '</button>';
+
+    /* fill values safely (no escaping problems) */
+    document.getElementById("profileNameInput").value = state.name;
+    document.getElementById("profileCurrentInput").value = formatIndianAmount(state.current);
+    document.getElementById("profileGoalInput").value = formatIndianAmount(state.goal);
+    document.getElementById("profileDateInput").value = state.startDate;
+    document.getElementById("profileRateInput").value = state.weeklyRate;
+  }
+}
+
+function closeSheet(){
+  document.getElementById("overlay").className = "overlay";
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+function updateCalculatorRateLabel(){
+  const select = document.getElementById("calcFrequency");
+  const label = document.getElementById("calcRateLabel");
+  if(!select || !label) return;
+  const names = {
+    daily:t("calcDaily"),
+    weekly:t("calcWeekly"),
+    monthly:t("calcMonthly"),
+    quarterly:t("calcQuarterly"),
+    annually:t("calcYearly")
+  };
+  label.textContent = t("calcRateLabel") + " (% " + (names[select.value] || t("calcWeekly")) + ")";
+}
+
+function calculateCompounding(){
+  const initialField = document.getElementById("calcInitial");
+  const targetField = document.getElementById("calcTarget");
+  const rateField = document.getElementById("calcRate");
+  const depositField = document.getElementById("calcDeposit");
+  const frequency = document.getElementById("calcFrequency").value;
+  const result = document.getElementById("calcResultContainer");
+  if(!result) return;
+  if(showEmptyFieldsError([initialField, targetField, rateField])) return;
+  const initial = parseAmount(initialField.value);
+  const target = parseAmount(targetField.value);
+  const rate = Number(rateField.value);
+  const deposit = parseAmount(depositField.value);
+
+  if(!Number.isFinite(initial) || !Number.isFinite(target) ||
+     !Number.isFinite(rate) || !Number.isFinite(deposit) || initial <= 0 || target <= initial || rate <= 0 || deposit < 0){
+    const invalidFields = [];
+    if(!Number.isFinite(initial) || initial <= 0 || target <= initial) invalidFields.push(initialField);
+    if(!Number.isFinite(target) || target <= initial) invalidFields.push(targetField);
+    if(!Number.isFinite(rate) || rate <= 0) invalidFields.push(rateField);
+    if(!Number.isFinite(deposit) || deposit < 0) invalidFields.push(depositField);
+    showInputValidationError(invalidFields, t("calcValidation"));
+    return;
+  }
+
+  const config = {
+    daily:{name:t("calcDaily"), unit:t("calcDay"), periodsPerYear:365},
+    weekly:{name:t("calcWeekly"), unit:t("calcWeek"), periodsPerYear:52},
+    monthly:{name:t("calcMonthly"), unit:t("calcMonth"), periodsPerYear:12},
+    quarterly:{name:t("calcQuarterly"), unit:t("calcQuarter"), periodsPerYear:4},
+    annually:{name:t("calcYearly"), unit:t("calcYear"), periodsPerYear:1}
+  }[frequency] || {name:t("calcWeekly"), unit:t("calcWeek"), periodsPerYear:52};
+  const labelCount = function(count){
+    return config.unit + " " + count;
+  };
+
+  const formatAmount = function(value){
+    return "₹" + value.toLocaleString("en-IN", {minimumFractionDigits:2, maximumFractionDigits:2});
+  };
+  let amount = initial;
+  let periodCount = 0;
+  let totalInterest = 0;
+  let totalDeposits = 0;
+  const rows = [];
+
+  while(amount < target && periodCount < 2000){
+    const period = calculatePeriod(amount, rate, deposit);
+    amount = period.closing;
+    totalInterest += period.interest;
+    totalDeposits += period.deposit;
+    periodCount++;
+    rows.push(
+      '<tr><td>' + labelCount(periodCount) + '</td>' +
+      '<td class="text-right">' + formatAmount(period.opening) + '</td>' +
+      '<td class="text-right">' + formatAmount(period.deposit) + '</td>' +
+      '<td class="text-right text-green">+' + formatAmount(period.interest) + '</td>' +
+      '<td class="text-right"><b>' + formatAmount(period.closing) + '</b></td></tr>'
+    );
+    if(!Number.isFinite(amount)) break;
+  }
+
+  const reached = amount >= target;
+  if(!reached){
+    result.innerHTML = '<div class="calculator-result">' + t("calcMaxPeriods") + '</div>';
+    return;
+  }
+
+  let remainingDays = Math.round(periodCount * 365.25 / config.periodsPerYear);
+  let years = Math.floor(remainingDays / 365.25);
+  remainingDays -= Math.round(years * 365.25);
+  let months = Math.floor(remainingDays / (365.25 / 12));
+  remainingDays -= Math.round(months * (365.25 / 12));
+  let days = Math.max(0, Math.round(remainingDays));
+  if(days >= 30){ days = 0; months++; }
+  if(months >= 12){ months -= 12; years++; }
+
+  const durationParts = [];
+  if(years) durationParts.push(years + ' ' + t("unitYears"));
+  if(months) durationParts.push(months + ' ' + t("unitMonths"));
+  if(days || !durationParts.length) durationParts.push(days + ' ' + t("unitDays"));
+  const approximateDuration = durationParts.join(', ');
+  const maturityDate = getProjectedMaturityDate(periodCount, frequency, new Date());
+
+  result.innerHTML =
+    '<div class="calculator-result">' +
+      '<div class="calculator-summary"><b>' + t("calcFrequencyLabel") + ':</b> ' + config.name +
+      ' | <b>' + t("calcRateLabel") + ':</b> ' + rate.toFixed(2) + '% / ' + config.name + '<br>' +
+      '<b>' + t("calcTotalTime") + ':</b> ' + labelCount(periodCount) +
+      ' (' + t("calcApprox") + ' ' + approximateDuration + ')<br>' +
+      '<div class="maturity-highlight"><small>' + t("maturityDate") + '</small><strong>' + maturityDate + '</strong></div>' +
+      '<b>' + t("analyticsTotalDeposits") + ':</b> ' + formatAmount(totalDeposits) + ' | ' +
+      '<b>' + t("analyticsTotalInterest") + ':</b> ' + formatAmount(totalInterest) + '<br><small>' + t("estimateDisclaimer") + '</small></div>' +
+      '<h3>' + t("calcBreakdown") + '</h3>' +
+      '<div class="calculator-table-wrap"><table class="calculator-table">' +
+        '<thead><tr><th>' + config.unit + '</th>' +
+        '<th class="text-right">' + t("calcOpening") + '</th>' +
+        '<th class="text-right">' + t("calcDeposit") + '</th>' +
+        '<th class="text-right">' + t("calcInterest") + '</th>' +
+        '<th class="text-right">' + t("calcClosing") + '</th></tr></thead>' +
+        '<tbody>' + rows.join("") + '</tbody></table></div>' +
+    '</div>';
+}
+
+function runCalculator(){
+  calculateCompounding();
+}
+
+function addEntry(){
+  const amtInput = document.getElementById("addAmount");
+  const noteInput = document.getElementById("addNote");
+  if(showEmptyFieldsError([amtInput])) return;
+  const val = parseAmount(amtInput.value);
+
+  if(!Number.isFinite(val) || val <= 0){
+    showInputValidationError([amtInput], t("msgInvalidAmount"));
+    return;
+  }
+
+  if(!Number.isFinite(Number(state.current) + val)){
+    showInputValidationError([amtInput], t("msgInvalidAmount"));
+    return;
+  }
+  state.current += val;
+
+  const now = new Date();
+  const yearInput = document.getElementById("addYear");
+  const selectedYear = yearInput ? Number(yearInput.value) : now.getFullYear();
+  if(Number.isInteger(selectedYear)) now.setFullYear(selectedYear);
+  let dateStr;
+  try{
+    dateStr = new Intl.DateTimeFormat(localeCode(), {day:"numeric", month:"long", year:"numeric"}).format(now);
+  }catch(e){
+    dateStr = now.toLocaleDateString();
+  }
+
+  state.entries.push({
+    type:"manual",
+    amount:val,
+    date:dateStr,
+    createdAt:now.toISOString(),
+    note:(noteInput.value || "").trim() || t("goal")
+  });
+
+  save();
+  closeSheet();
+  render();
+  toast(t("msgSaved"));
+}
+
+function handleProfilePhoto(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    state.profilePhoto = evt.target.result;
+    const avatar = document.getElementById("sheetProfileAvatar");
+    if(avatar) avatar.innerHTML = '<img src="' + state.profilePhoto + '">';
+    updateProfileAvatar();
+    save();
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProfile(){
+  const nameInput = document.getElementById("profileNameInput");
+  const currentInput = document.getElementById("profileCurrentInput");
+  const goalInput = document.getElementById("profileGoalInput");
+  const dateInput = document.getElementById("profileDateInput");
+  const rateInput = document.getElementById("profileRateInput");
+
+  if(showEmptyFieldsError([goalInput, rateInput].concat(state.current <= 0 ? [currentInput] : []))) return;
+  const currentValue = state.current > 0 ? state.current : parseAmount(currentInput.value);
+  const goalValue = parseAmount(goalInput.value);
+  const rateValue = Number(rateInput.value);
+  const invalidFields = [];
+  if(!Number.isFinite(currentValue) || currentValue <= 0){
+    if(state.current <= 0) invalidFields.push(currentInput);
+  }
+  if(!Number.isFinite(goalValue) || goalValue <= currentValue) invalidFields.push(goalInput);
+  if(!Number.isFinite(rateValue) || rateValue <= 0) invalidFields.push(rateInput);
+  if(invalidFields.length){
+    showInputValidationError(invalidFields, t("calcValidation"));
+    return;
+  }
+
+  if(nameInput) state.name = (nameInput.value || "").trim() || t("myGoal");
+  if(currentInput && state.current <= 0){
+    state.current = currentValue;
+    recordInitialDeposit(currentValue);
+    state.lastInterestDate = localDateTimeValue(new Date());
+  }
+  state.goal = goalValue;
+  if(dateInput && dateInput.value) state.startDate = dateInput.value;
+  state.weeklyRate = rateValue;
+  save();
+  closeSheet();
+  render();
+  toast(t("msgProfileSaved"));
+}
+
+function resetData(){
+  if(!window.confirm(t("msgResetConfirm"))) return;
+  state.current = 0;
+  state.entries = [];
+  state.completedWeeks = [];
+  expandedWeek = null;
+  expandedHistoryEntry = null;
+  historyYearFilter = "all";
+  historyMonthFilter = "all";
+  save();
+  render();
+  toast(t("msgResetDone"));
+}
+
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._timer);
+  el._timer = setTimeout(function(){ el.classList.remove("show"); }, 2800);
+}
+
+/* =========================================================
+   BOOT
+========================================================= */
+window.onload = function(){
+  document.addEventListener("input", function(event){
+    if(event.target.matches(".input")) clearInputValidation(event.target);
+  });
+  load();
+  render();
+  setInterval(function(){
+    const dots = document.querySelectorAll(".carousel-dots .dot");
+    if(dots.length) scrollToSlide((getCarouselSlideIndex() + 1) % dots.length);
+  }, 5000);
+};
+</script>
+</body>
+</html>
